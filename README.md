@@ -50,9 +50,23 @@ clinica_veterinaria/
 
 1. **Copie o projeto** para a pasta `htdocs` do XAMPP (por exemplo, `C:\xampp\htdocs\clinica_veterinaria`).
 2. **Inicie o Apache e o MySQL** pelo painel de controle do XAMPP.
-3. **Crie o banco de dados:** acesse `http://localhost/phpmyadmin`, abra a aba **Importar** e importe os arquivos da pasta `banco_de_dados/` **nesta ordem**:
+3. **Crie o banco de dados** executando os arquivos da pasta `banco_de_dados/` **nesta ordem**:
    1. `01_estrutura.sql` (cria o banco `clinica_veterinaria` e as tabelas)
    2. `02_povoamento.sql` (insere os dados de exemplo)
+
+   Escolha uma das opções abaixo.
+
+   **Opção A: MySQL Workbench**
+   1. Crie uma conexão com host `localhost`, porta `3306` e usuário `root`, sem senha. Depois abra a conexão.
+   2. Como o XAMPP usa o MariaDB, o Workbench pode avisar que a versão do servidor é incompatível ou não suportada. Clique em **Continue Anyway**. Esse aviso não impede o uso.
+   3. Vá em **File → Open SQL Script...** e abra o `01_estrutura.sql`.
+   4. Execute o script inteiro clicando no ícone de **raio** (ou `Ctrl+Shift+Enter`).
+   5. Repita os passos 3 e 4 com o `02_povoamento.sql`.
+   6. No painel **Schemas**, clique com o botão direito e escolha **Refresh All** para ver o banco `clinica_veterinaria`.
+
+   **Opção B: phpMyAdmin**
+   1. Acesse `http://localhost/phpmyadmin`.
+   2. Na aba **Importar**, importe o `01_estrutura.sql` e depois o `02_povoamento.sql`.
 4. **Configure a conexão:** faça uma cópia do arquivo `.env.example` com o nome `.env`, na raiz do projeto. Com a instalação padrão do XAMPP, use:
 
    ```
@@ -69,6 +83,8 @@ clinica_veterinaria/
 ## Consultas (relatórios)
 
 As consultas SQL estão em `banco_de_dados/03_consultas.sql`. Cada uma tem um comentário explicando o que faz. Também é possível executá-las pelo menu **Relatórios** do sistema.
+
+Para testar uma consulta no MySQL Workbench, abra o arquivo em **File → Open SQL Script...**, coloque o cursor sobre a consulta e pressione `Ctrl+Enter`. Esse atalho executa só a consulta onde está o cursor.
 
 | Tipo | Quantidade |
 |---|---|
