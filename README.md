@@ -58,11 +58,8 @@ clinica_veterinaria/
 
    **Opção A: MySQL Workbench**
    1. Crie uma conexão com host `localhost`, porta `3306` e usuário `root`, sem senha. Depois abra a conexão.
-   2. Como o XAMPP usa o MariaDB, o Workbench pode avisar que a versão do servidor é incompatível ou não suportada. Clique em **Continue Anyway**. Esse aviso não impede o uso.
-   3. Vá em **File → Open SQL Script...** e abra o `01_estrutura.sql`.
-   4. Execute o script inteiro clicando no ícone de **raio** (ou `Ctrl+Shift+Enter`).
-   5. Repita os passos 3 e 4 com o `02_povoamento.sql`.
-   6. No painel **Schemas**, clique com o botão direito e escolha **Refresh All** para ver o banco `clinica_veterinaria`.
+   2. abra o `01_estrutura.sql` e execute.
+   3. abra o `02_povoamento.sql` e execute.
 
    **Opção B: phpMyAdmin**
    1. Acesse `http://localhost/phpmyadmin`.
