@@ -1,6 +1,6 @@
-# Clínica Veterinária
+# Gestão Fotovoltaica
 
-Sistema web para gerenciamento de uma clínica veterinária, desenvolvido como trabalho final da disciplina de Banco de Dados. Permite cadastrar tutores, animais, veterinários, serviços e consultas, além de emitir relatórios a partir de consultas SQL.
+Sistema web para gerenciamento de obras de instalação de usinas solares fotovoltaicas, desenvolvido como trabalho final da disciplina de Banco de Dados. Permite cadastrar clientes, engenheiros, concessionárias, equipamentos e obras, acompanhar as etapas de cada obra (projeto, homologação, instalação etc.) e emitir relatórios a partir de consultas SQL.
 
 O sistema foi feito em **PHP puro, sem frameworks**, organizado em camadas no padrão **MVC** (Modelo, Visão e Controlador).
 
@@ -30,7 +30,7 @@ O sistema foi feito em **PHP puro, sem frameworks**, organizado em camadas no pa
 ## Estrutura de pastas
 
 ```
-clinica_veterinaria/
+gestao_fotovoltaica/
 ├── aplicacao/
 │   ├── Controladores/      → recebem as requisições e decidem o que exibir
 │   ├── Modelos/            → acesso ao banco de dados (todo o SQL fica aqui)
@@ -48,10 +48,10 @@ clinica_veterinaria/
 
 ## Como executar no XAMPP
 
-1. **Copie o projeto** para a pasta `htdocs` do XAMPP (por exemplo, `C:\xampp\htdocs\clinica_veterinaria`).
+1. **Copie o projeto** para a pasta `htdocs` do XAMPP (por exemplo, `C:\xampp\htdocs\gestao_fotovoltaica`).
 2. **Inicie o Apache e o MySQL** pelo painel de controle do XAMPP.
 3. **Crie o banco de dados** executando os arquivos da pasta `banco_de_dados/` **nesta ordem**:
-   1. `01_estrutura.sql` (cria o banco `clinica_veterinaria` e as tabelas)
+   1. `01_estrutura.sql` (cria o banco `gestao_fotovoltaica` e as tabelas)
    2. `02_povoamento.sql` (insere os dados de exemplo)
 
    Escolha uma das opções abaixo.
@@ -69,13 +69,13 @@ clinica_veterinaria/
    ```
    DB_HOST=localhost
    DB_PORT=3306
-   DB_DATABASE=clinica_veterinaria
+   DB_DATABASE=gestao_fotovoltaica
    DB_USERNAME=root
    DB_PASSWORD=
    ```
 
    No XAMPP, o usuário `root` vem **sem senha**, por isso `DB_PASSWORD` fica vazio.
-5. **Acesse o sistema** em `http://localhost/clinica_veterinaria/`.
+5. **Acesse o sistema** em `http://localhost/gestao_fotovoltaica/`.
 
 ## Consultas (relatórios)
 
