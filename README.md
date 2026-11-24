@@ -1,0 +1,78 @@
+# Clínica Veterinária
+
+Sistema web para gerenciamento de uma clínica veterinária, desenvolvido como trabalho final da disciplina de Banco de Dados. Permite cadastrar tutores, animais, veterinários, serviços e consultas, além de emitir relatórios a partir de consultas SQL.
+
+O sistema foi feito em **PHP puro, sem frameworks**, organizado em camadas no padrão **MVC** (Modelo, Visão e Controlador).
+
+## Integrantes
+
+- Christiano Eduardo Dutra e Silva
+
+## Tecnologias
+
+| Tecnologia | Versão |
+|---|---|
+| PHP | 8.2 ou superior |
+| MariaDB | 10.4 (a que vem no XAMPP) |
+| Servidor | Apache, via XAMPP |
+| Acesso ao banco | mysqli (extensão `mysqli`) |
+
+## Requisitos do trabalho
+
+| Requisito | Onde encontrar |
+|---|---|
+| Requisitos, casos de uso, modelagem conceitual e lógica, dicionário de dados | `documentacao/` |
+| Banco de dados físico | `banco_de_dados/01_estrutura.sql` |
+| Povoamento (mínimo de 10 registros por tabela) | `banco_de_dados/02_povoamento.sql` |
+| 12 consultas (3 com junção, 3 com agrupamento, 3 com datas, 3 aninhadas) | `banco_de_dados/03_consultas.sql` e menu **Relatórios** do sistema |
+| CRUD (inserção, listagem, atualização e exclusão) | Menus de cadastro do sistema |
+
+## Estrutura de pastas
+
+```
+clinica_veterinaria/
+├── aplicacao/
+│   ├── Controladores/      → recebem as requisições e decidem o que exibir
+│   ├── Modelos/            → acesso ao banco de dados (todo o SQL fica aqui)
+│   ├── Nucleo/             → conexão com o banco, roteamento e classes base
+│   └── Visoes/             → telas em HTML
+│       ├── comum/          → cabeçalho, menu e rodapé
+│       └── relatorios/     → telas dos relatórios
+├── banco_de_dados/         → scripts SQL de estrutura, povoamento e consultas
+├── configuracao/           → leitura das configurações do arquivo .env
+├── documentacao/           → documentação do projeto
+├── publico/                → ponto de entrada do sistema (index.php), CSS e JS
+├── .env.example            → modelo do arquivo de configuração
+└── README.md
+```
+
+## Como executar no XAMPP
+
+1. **Copie o projeto** para a pasta `htdocs` do XAMPP (por exemplo, `C:\xampp\htdocs\clinica_veterinaria`).
+2. **Inicie o Apache e o MySQL** pelo painel de controle do XAMPP.
+3. **Crie o banco de dados:** acesse `http://localhost/phpmyadmin`, abra a aba **Importar** e importe os arquivos da pasta `banco_de_dados/` **nesta ordem**:
+   1. `01_estrutura.sql` (cria o banco `clinica_veterinaria` e as tabelas)
+   2. `02_povoamento.sql` (insere os dados de exemplo)
+4. **Configure a conexão:** faça uma cópia do arquivo `.env.example` com o nome `.env`, na raiz do projeto. Com a instalação padrão do XAMPP, use:
+
+   ```
+   DB_HOST=localhost
+   DB_PORT=3306
+   DB_DATABASE=clinica_veterinaria
+   DB_USERNAME=root
+   DB_PASSWORD=
+   ```
+
+   No XAMPP, o usuário `root` vem **sem senha**, por isso `DB_PASSWORD` fica vazio.
+5. **Acesse o sistema** em `http://localhost/clinica_veterinaria/`.
+
+## Consultas (relatórios)
+
+As consultas SQL estão em `banco_de_dados/03_consultas.sql`. Cada uma tem um comentário explicando o que faz. Também é possível executá-las pelo menu **Relatórios** do sistema.
+
+| Tipo | Quantidade |
+|---|---|
+| Consultas com junção | 3 |
+| Consultas com `GROUP BY`, funções agregadas e/ou `HAVING` | 3 |
+| Consultas com funções de data | 3 |
+| Consultas aninhadas (subconsultas) | 3 |
