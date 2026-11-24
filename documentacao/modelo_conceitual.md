@@ -34,7 +34,7 @@ O atributo identificador de cada entidade está em **negrito**.
 |---|---|---|---|
 | **CONTRATA** | CLIENTE (1,1) — (0,N) OBRA | Um cliente contrata nenhuma ou várias obras. Cada obra pertence a um único cliente. | — |
 | **RESPONSAVEL_POR** | ENGENHEIRO (1,1) — (0,N) OBRA | Um engenheiro é responsável por nenhuma ou várias obras. Cada obra tem um único engenheiro responsável. | — |
-| **EXECUTA** | EQUIPE (1,1) — (0,N) OBRA | Uma equipe executa nenhuma ou várias obras. Cada obra é executada por uma única equipe. | — |
+| **EXECUTA** | EQUIPE (0,N) — (0,N) OBRA | Uma equipe executa nenhuma ou várias obras. Uma obra pode ser executada por nenhuma ou várias equipes. | — |
 | **CONECTA** | CONCESSIONARIA (1,1) — (0,N) OBRA | Uma concessionária atende nenhuma ou várias obras. Cada obra é conectada à rede de uma única concessionária. | — |
 | **COMPOE** | EQUIPE (1,1) — (2,N) COLABORADOR | Uma equipe é formada por no mínimo dois colaboradores. Cada colaborador faz parte de uma única equipe. | — |
 | **FABRICA** | FABRICANTE (1,1) — (0,N) EQUIPAMENTO | Um fabricante fabrica nenhum ou vários equipamentos. Cada equipamento tem um único fabricante. | — |
@@ -55,10 +55,13 @@ O endereço é formado por logradouro, número, bairro, cidade e UF. No modelo l
 
 No modelo lógico, cada um desses relacionamentos vira uma tabela associativa.
 
-**4. O tipo do equipamento e a função do colaborador são atributos com valores fixos.**
+**4. Uma obra pode ter várias equipes.**
+Usinas maiores precisam de várias equipes trabalhando juntas, por isso EXECUTA é um relacionamento N:N. O mínimo do lado da equipe é zero, porque a obra é cadastrada na assinatura do contrato e só recebe equipes depois do projeto e da homologação. No modelo lógico, EXECUTA também vira uma tabela associativa, mesmo sem atributos próprios.
+
+**5. O tipo do equipamento e a função do colaborador são atributos com valores fixos.**
 O tipo do equipamento (módulo, inversor, estrutura...) e a função do colaborador (instalador ou ajudante) têm poucos valores possíveis, que não mudam e não têm outras informações associadas. Por isso foram modelados como atributos com domínio restrito, e não como entidades separadas. No modelo físico, o domínio será garantido com uma restrição `CHECK`.
 
-**5. A etapa é uma entidade, e não apenas um atributo da obra.**
+**6. A etapa é uma entidade, e não apenas um atributo da obra.**
 As etapas têm nome e ordem e se repetem em todas as obras. Se cada obra guardasse colunas como "data_homologacao" e "data_instalacao", haveria um grupo repetido de atributos, o que fere a 1ª Forma Normal. Além disso, incluir uma etapa nova exigiria alterar a estrutura da tabela. Com a etapa como entidade, basta cadastrar uma nova linha.
 
 ## Restrições que o diagrama não consegue representar

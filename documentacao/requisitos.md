@@ -7,7 +7,7 @@ Este documento lista o que o sistema deve fazer (requisitos funcionais), as regr
 | Ator | Descrição |
 |---|---|
 | **Comercial** | Cadastra clientes e obras e registra o valor do contrato. |
-| **Engenheiro** | Acompanha as etapas das obras e registra os equipamentos usados em cada obra. |
+| **Engenheiro** | Acompanha as etapas das obras, aloca as equipes de instalação e registra os equipamentos usados em cada obra. |
 | **Diretoria** | Mantém os cadastros de apoio (engenheiros, equipes de instalação, colaboradores, concessionárias, fabricantes, equipamentos e etapas) e consulta os relatórios. |
 
 ## Requisitos funcionais
@@ -26,7 +26,7 @@ Em todos os cadastros abaixo, "manter" significa **inserir, listar, editar e exc
 | RF06 | O sistema deve permitir manter **fabricantes** (nome e país de origem). | Diretoria |
 | RF07 | O sistema deve permitir manter **equipamentos** (tipo, modelo, fabricante, potência, preço atual e garantia em anos). | Diretoria |
 | RF08 | O sistema deve permitir manter as **etapas** padrão das obras (nome e ordem). | Diretoria |
-| RF09 | O sistema deve permitir manter **obras** (cliente, engenheiro responsável, equipe de instalação, concessionária, número da UC, endereço da instalação, tipo de ligação, data do contrato e valor do contrato). | Comercial |
+| RF09 | O sistema deve permitir manter **obras** (cliente, engenheiro responsável, concessionária, número da UC, endereço da instalação, tipo de ligação, data do contrato e valor do contrato). | Comercial |
 
 ### Acompanhamento da obra
 
@@ -34,7 +34,8 @@ Em todos os cadastros abaixo, "manter" significa **inserir, listar, editar e exc
 |---|---|---|
 | RF10 | O sistema deve permitir registrar o **andamento de cada etapa** de uma obra, informando a data prevista, a data de início e a data de conclusão. | Engenheiro |
 | RF11 | O sistema deve permitir registrar os **equipamentos usados em uma obra**, com a quantidade e o valor unitário cobrado. | Engenheiro |
-| RF12 | O sistema deve exibir, na tela de detalhes da obra, a **potência total da usina em kWp**, calculada a partir dos módulos registrados. | Todos |
+| RF12 | O sistema deve permitir **alocar uma ou mais equipes de instalação em uma obra** e remover equipes alocadas. | Engenheiro |
+| RF13 | O sistema deve exibir, na tela de detalhes da obra, a **potência total da usina em kWp**, calculada a partir dos módulos registrados. | Todos |
 
 ### Relatórios
 
@@ -42,18 +43,18 @@ Cada relatório corresponde a uma das consultas SQL exigidas no trabalho.
 
 | Código | Relatório | Tipo de consulta |
 |---|---|---|
-| RF13 | Listar as obras com o nome do cliente, do engenheiro responsável e da concessionária. | Junção |
-| RF14 | Listar os equipamentos instalados em cada obra, com o fabricante e o valor cobrado. | Junção |
-| RF15 | Listar o andamento das etapas de cada obra, indicando as concluídas e as pendentes. | Junção |
-| RF16 | Exibir a potência total instalada (kWp) por engenheiro. | Agrupamento |
-| RF17 | Exibir o valor total vendido em cada mês. | Agrupamento |
-| RF18 | Listar as concessionárias com mais de uma quantidade informada de obras. | Agrupamento com `HAVING` |
-| RF19 | Exibir quantos dias cada obra levou para ser homologada. | Datas |
-| RF20 | Listar as etapas atrasadas (que passaram da data prevista e ainda não foram concluídas). | Datas |
-| RF21 | Listar os equipamentos cuja garantia vence nos próximos meses. | Datas |
-| RF22 | Listar as obras com potência acima da média da empresa. | Aninhada |
-| RF23 | Listar os equipamentos do catálogo que nunca foram usados em nenhuma obra. | Aninhada |
-| RF24 | Exibir a concessionária com o maior tempo médio de homologação. | Aninhada |
+| RF14 | Listar as obras com o nome do cliente, do engenheiro responsável e da concessionária. | Junção |
+| RF15 | Listar os equipamentos instalados em cada obra, com o fabricante e o valor cobrado. | Junção |
+| RF16 | Listar o andamento das etapas de cada obra, indicando as concluídas e as pendentes. | Junção |
+| RF17 | Exibir a potência total instalada (kWp) por engenheiro. | Agrupamento |
+| RF18 | Exibir o valor total vendido em cada mês. | Agrupamento |
+| RF19 | Listar as concessionárias com mais de uma quantidade informada de obras. | Agrupamento com `HAVING` |
+| RF20 | Exibir quantos dias cada obra levou para ser homologada. | Datas |
+| RF21 | Listar as etapas atrasadas (que passaram da data prevista e ainda não foram concluídas). | Datas |
+| RF22 | Listar os equipamentos cuja garantia vence nos próximos meses. | Datas |
+| RF23 | Listar as obras com potência acima da média da empresa. | Aninhada |
+| RF24 | Listar os equipamentos do catálogo que nunca foram usados em nenhuma obra. | Aninhada |
+| RF25 | Exibir a concessionária com o maior tempo médio de homologação. | Aninhada |
 
 ## Regras de negócio
 
@@ -72,7 +73,8 @@ Cada relatório corresponde a uma das consultas SQL exigidas no trabalho.
 | RN11 | Uma etapa é considerada atrasada quando a data atual já passou da data prevista e a data de conclusão ainda não foi preenchida. |
 | RN12 | Cada equipe de instalação deve ter **no mínimo um instalador (eletricista) e um ajudante**. Não há limite máximo de membros. O sistema não deve permitir excluir um colaborador, trocá-lo de equipe ou alterar sua função se ele for o único instalador ou o único ajudante de uma equipe que tem obras. |
 | RN13 | Cada colaborador pertence a uma única equipe, e sua função deve ser "instalador" ou "ajudante". |
-| RN14 | Uma obra só pode ser atribuída a uma equipe completa, ou seja, com pelo menos um instalador e pelo menos um ajudante. |
+| RN14 | Uma equipe só pode ser alocada em uma obra se estiver completa, ou seja, com pelo menos um instalador e pelo menos um ajudante. |
+| RN15 | Uma obra pode ter várias equipes alocadas, mas a mesma equipe não pode ser alocada duas vezes na mesma obra. |
 
 ## Requisitos não funcionais
 

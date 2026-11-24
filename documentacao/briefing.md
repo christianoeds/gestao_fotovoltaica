@@ -35,7 +35,7 @@ A ideia é ter um sistema simples, que rode no navegador, para centralizar esses
 
 **Colaboradores:** as pessoas que fazem parte das equipes. Guardamos nome, CPF, telefone, função (instalador ou ajudante) e a equipe a que pertencem. Cada colaborador faz parte de uma única equipe.
 
-**Obras:** cada obra pertence a um cliente, tem um engenheiro responsável, é executada por uma equipe de instalação e é ligada a uma concessionária. Uma mesma equipe faz várias obras ao longo do tempo. Guardamos o número da unidade consumidora (UC), o endereço da instalação, o tipo de ligação (monofásica, bifásica ou trifásica), a data de assinatura do contrato e o valor do contrato.
+**Obras:** cada obra pertence a um cliente, tem um engenheiro responsável, é ligada a uma concessionária e é executada por uma ou mais equipes de instalação. Obras pequenas normalmente têm uma só equipe, mas usinas maiores precisam de várias equipes trabalhando juntas. As equipes são definidas depois do projeto e da homologação, quando a obra está perto de ir a campo. Uma mesma equipe faz várias obras ao longo do tempo. Guardamos o número da unidade consumidora (UC), o endereço da instalação, o tipo de ligação (monofásica, bifásica ou trifásica), a data de assinatura do contrato e o valor do contrato.
 
 **Etapas:** a lista padrão de etapas que toda obra percorre (vistoria técnica, projeto, homologação, instalação, vistoria da concessionária, ligação), em ordem.
 

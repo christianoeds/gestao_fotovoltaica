@@ -29,10 +29,11 @@ Nos casos de uso do tipo **"Manter"**, o ator pode **listar, inserir, editar e e
 | UC09 | Manter etapas | Diretoria | RF08 |
 | UC10 | Registrar andamento das etapas | Engenheiro | RF10 |
 | UC11 | Registrar equipamentos da obra | Engenheiro | RF11 |
-| UC12 | Consultar detalhes da obra | Comercial, Engenheiro, Diretoria | RF12 |
-| UC13 | Emitir relatórios | Diretoria | RF13 a RF24 |
+| UC12 | Consultar detalhes da obra | Comercial, Engenheiro, Diretoria | RF13 |
+| UC13 | Emitir relatórios | Diretoria | RF14 a RF25 |
+| UC14 | Alocar equipes na obra | Engenheiro | RF12 |
 
-Os casos de uso UC10 e UC11 partem da tela de detalhes da obra (UC12). No diagrama, eles aparecem como extensões (`<<extend>>`) do UC12.
+Os casos de uso UC10, UC11 e UC14 partem da tela de detalhes da obra (UC12). No diagrama, eles aparecem como extensões (`<<extend>>`) do UC12.
 
 ## Descrição dos principais casos de uso
 
@@ -83,9 +84,9 @@ Os casos de uso UC03, UC04, UC07, UC08 e UC09 são cadastros simples e seguem o 
 | | |
 |---|---|
 | **Ator** | Comercial |
-| **Requisitos** | RF09, RN03, RN04, RN05, RN14 |
-| **Pré-condição** | Devem existir clientes, engenheiros, concessionárias e equipes de instalação cadastrados. |
-| **Pós-condição** | A obra fica cadastrada e pode ter suas etapas e equipamentos registrados. |
+| **Requisitos** | RF09, RN03, RN04, RN05 |
+| **Pré-condição** | Devem existir clientes, engenheiros e concessionárias cadastrados. |
+| **Pós-condição** | A obra fica cadastrada e pode ter suas etapas, equipes e equipamentos registrados. |
 
 **Fluxo principal (listar)**
 1. O ator acessa o menu **Obras**.
@@ -93,7 +94,7 @@ Os casos de uso UC03, UC04, UC07, UC08 e UC09 são cadastros simples e seguem o 
 
 **Fluxo alternativo A1: inserir obra**
 1. O ator clica em **Nova obra**.
-2. O sistema exibe o formulário, com listas de seleção para cliente, engenheiro, equipe, concessionária e tipo de ligação.
+2. O sistema exibe o formulário, com listas de seleção para cliente, engenheiro, concessionária e tipo de ligação.
 3. O ator preenche os dados e clica em **Salvar**.
 4. O sistema valida os dados, grava a obra e volta para a lista com uma mensagem de sucesso.
 
@@ -104,9 +105,8 @@ Igual ao A2 do UC01, usando o formulário de obra.
 Igual ao A3 do UC01.
 
 **Fluxos de exceção**
-- **E1, equipe incompleta (RN14):** em A1 ou A2, se a equipe escolhida não tiver pelo menos um instalador e um ajudante, o sistema não grava e avisa que a equipe está incompleta.
-- **E2, valor do contrato inválido (RN05):** em A1 ou A2, se o valor for zero ou negativo, o sistema não grava e avisa o erro.
-- **E3, obra com etapas ou equipamentos registrados (RN03):** em A3, o sistema não exclui e avisa que a obra já tem registros ligados a ela.
+- **E1, valor do contrato inválido (RN05):** em A1 ou A2, se o valor for zero ou negativo, o sistema não grava e avisa o erro.
+- **E2, obra com etapas, equipes ou equipamentos registrados (RN03):** em A3, o sistema não exclui e avisa que a obra já tem registros ligados a ela.
 
 ---
 
@@ -189,19 +189,46 @@ Igual ao A3 do UC01.
 
 ---
 
+### UC14: Alocar equipes na obra
+
+| | |
+|---|---|
+| **Ator** | Engenheiro |
+| **Requisitos** | RF12, RN14, RN15 |
+| **Pré-condição** | A obra deve estar cadastrada e deve existir pelo menos uma equipe completa. |
+| **Pós-condição** | A obra fica com as equipes de instalação que vão executá-la. |
+
+**Fluxo principal**
+1. O ator abre os detalhes de uma obra (UC12) e clica em **Equipes**.
+2. O sistema exibe as equipes já alocadas na obra, com seus membros, e uma lista das equipes que podem ser adicionadas.
+3. O ator seleciona uma equipe e clica em **Alocar**.
+4. O sistema valida a equipe, grava a alocação, atualiza a lista e exibe uma mensagem de sucesso.
+
+**Fluxo alternativo A1: remover equipe da obra**
+1. O ator clica em **Remover** em uma equipe alocada.
+2. O sistema pede uma confirmação.
+3. O ator confirma.
+4. O sistema remove a equipe da obra e atualiza a lista.
+
+**Fluxos de exceção**
+- **E1, equipe incompleta (RN14):** no passo 4, se a equipe não tiver pelo menos um instalador e um ajudante, o sistema não grava e avisa que a equipe está incompleta.
+- **E2, equipe já alocada (RN15):** no passo 4, se a equipe já estiver alocada nessa obra, o sistema não grava e avisa que ela já faz parte da obra.
+
+---
+
 ### UC12: Consultar detalhes da obra
 
 | | |
 |---|---|
 | **Ator** | Comercial, Engenheiro, Diretoria |
-| **Requisitos** | RF12, RN08 |
+| **Requisitos** | RF13, RN08 |
 | **Pré-condição** | A obra deve estar cadastrada. |
 | **Pós-condição** | Nenhuma (apenas consulta). |
 
 **Fluxo principal**
 1. O ator clica em uma obra na lista de obras.
-2. O sistema exibe os dados da obra, o cliente, o engenheiro, a equipe com seus membros, a concessionária e a **potência total da usina em kWp**, calculada a partir dos módulos registrados (RN08).
-3. O sistema exibe os atalhos para **Etapas** (UC10) e **Equipamentos** (UC11).
+2. O sistema exibe os dados da obra, o cliente, o engenheiro, as equipes alocadas com seus membros, a concessionária e a **potência total da usina em kWp**, calculada a partir dos módulos registrados (RN08).
+3. O sistema exibe os atalhos para **Etapas** (UC10), **Equipamentos** (UC11) e **Equipes** (UC14).
 
 ---
 
@@ -210,7 +237,7 @@ Igual ao A3 do UC01.
 | | |
 |---|---|
 | **Ator** | Diretoria |
-| **Requisitos** | RF13 a RF24 |
+| **Requisitos** | RF14 a RF25 |
 | **Pré-condição** | O banco de dados deve ter dados cadastrados. |
 | **Pós-condição** | Nenhuma (apenas consulta). |
 
@@ -221,7 +248,7 @@ Igual ao A3 do UC01.
 4. O sistema executa a consulta e exibe o resultado em uma tabela.
 
 **Fluxo alternativo A1: relatório com parâmetro**
-1. No passo 3, se o relatório precisar de um valor informado pelo ator (a quantidade mínima de obras no RF18 ou o número de meses no RF21), o sistema exibe um campo para esse valor.
+1. No passo 3, se o relatório precisar de um valor informado pelo ator (a quantidade mínima de obras no RF19 ou o número de meses no RF22), o sistema exibe um campo para esse valor.
 2. O ator informa o valor e clica em **Gerar**.
 3. O sistema executa a consulta com o valor informado e exibe o resultado.
 

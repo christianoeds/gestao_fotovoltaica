@@ -16,6 +16,7 @@ rectangle "Sistema de Gestão Fotovoltaica" {
   usecase "UC12 - Consultar detalhes da obra" as UC12
   usecase "UC10 - Registrar andamento\ndas etapas" as UC10
   usecase "UC11 - Registrar equipamentos\nda obra" as UC11
+  usecase "UC14 - Alocar equipes\nna obra" as UC14
 
   usecase "UC03 - Manter concessionárias" as UC03
   usecase "UC04 - Manter engenheiros" as UC04
@@ -34,6 +35,7 @@ comercial --> UC12
 engenheiro --> UC12
 engenheiro --> UC10
 engenheiro --> UC11
+engenheiro --> UC14
 
 diretoria --> UC12
 diretoria --> UC03
@@ -47,5 +49,6 @@ diretoria --> UC13
 
 UC10 .> UC12 : <<extend>>
 UC11 .> UC12 : <<extend>>
+UC14 .> UC12 : <<extend>>
 
 @enduml
