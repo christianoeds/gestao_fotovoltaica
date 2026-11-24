@@ -25,15 +25,17 @@ A ideia é ter um sistema simples, que rode no navegador, para centralizar esses
 
 ## O que a empresa precisa guardar
 
-**Clientes:** quem contrata a obra. Pode ser pessoa física ou jurídica, então guardamos nome ou razão social, CPF ou CNPJ, telefone, e-mail e cidade. Um cliente pode ter várias obras, por exemplo uma na casa e outra no comércio.
+**Pessoas:** clientes, engenheiros e colaboradores têm dados em comum: nome, telefone, e-mail e endereço (rua, número, bairro, cidade e UF). Cada pessoa cadastrada tem um único papel no sistema: é cliente, engenheiro ou colaborador.
+
+**Clientes:** quem contrata a obra. Pode ser **pessoa física**, de quem guardamos o CPF, ou **pessoa jurídica**, de quem guardamos o CNPJ e a razão social. Para empresas, o nome usado no dia a dia (o nome fantasia) fica como nome da pessoa. O tipo do cliente (física ou jurídica) não muda depois do cadastro. Um cliente pode ter várias obras, por exemplo uma na casa e outra no comércio.
 
 **Concessionárias:** as distribuidoras de energia que aprovam a conexão do sistema à rede. Guardamos o nome, a sigla e o estado onde atuam.
 
-**Engenheiros:** nome, número do CREA, telefone e e-mail. Cada obra tem um engenheiro responsável.
+**Engenheiros:** além dos dados comuns de pessoa, guardamos o número do CREA. Cada obra tem um engenheiro responsável.
 
 **Equipes de instalação:** a Derivar trabalha com equipes fixas. Cada equipe tem **no mínimo** um instalador (eletricista) e um ajudante. Equipes que atendem obras maiores podem ter mais instaladores e mais ajudantes. Para cada equipe guardamos um nome que a identifique (por exemplo, "Equipe 01").
 
-**Colaboradores:** as pessoas que fazem parte das equipes. Guardamos nome, CPF, telefone, função (instalador ou ajudante) e a equipe a que pertencem. Cada colaborador faz parte de uma única equipe.
+**Colaboradores:** as pessoas que fazem parte das equipes. Além dos dados comuns de pessoa, guardamos o CPF, a função (instalador ou ajudante) e a equipe a que pertencem. Cada colaborador faz parte de uma única equipe.
 
 **Obras:** cada obra pertence a um cliente, tem um engenheiro responsável, é ligada a uma concessionária e é executada por uma ou mais equipes de instalação. Obras pequenas normalmente têm uma só equipe, mas usinas maiores precisam de várias equipes trabalhando juntas. As equipes são definidas depois do projeto e da homologação, quando a obra está perto de ir a campo. Uma mesma equipe faz várias obras ao longo do tempo. Guardamos o número da unidade consumidora (UC), o endereço da instalação, o tipo de ligação (monofásica, bifásica ou trifásica), a data de assinatura do contrato e o valor do contrato.
 

@@ -1,0 +1,166 @@
+@startuml modelo_logico
+' Modelo lógico (notação pé de galinha): Gestão Fotovoltaica
+' Para gerar a imagem: plugin PlantUML do PhpStorm (requer Graphviz).
+'
+' Legenda:  * = obrigatório (NOT NULL)   PK = chave primária   FK = chave estrangeira   UK = único
+
+hide circle
+hide empty methods
+skinparam linetype ortho
+skinparam nodesep 60
+skinparam ranksep 70
+
+' ---------- Herança: pessoa e suas especializações ----------
+
+entity "pessoa" as pessoa {
+  * id_pessoa : INT <<PK>>
+  --
+  * categoria : VARCHAR(12)
+  * nome : VARCHAR(100)
+  * telefone : VARCHAR(20)
+    email : VARCHAR(100)
+  * logradouro : VARCHAR(100)
+  * numero : VARCHAR(10)
+  * bairro : VARCHAR(60)
+  * cidade : VARCHAR(60)
+  * uf : CHAR(2)
+}
+
+entity "cliente" as cliente {
+  * id_pessoa : INT <<PK, FK>>
+  --
+  * tipo : CHAR(2)
+}
+
+entity "cliente_pf" as cliente_pf {
+  * id_pessoa : INT <<PK, FK>>
+  --
+  * cpf : CHAR(11) <<UK>>
+}
+
+entity "cliente_pj" as cliente_pj {
+  * id_pessoa : INT <<PK, FK>>
+  --
+  * cnpj : CHAR(14) <<UK>>
+  * razao_social : VARCHAR(150)
+}
+
+entity "engenheiro" as engenheiro {
+  * id_pessoa : INT <<PK, FK>>
+  --
+  * crea : VARCHAR(20) <<UK>>
+}
+
+entity "colaborador" as colaborador {
+  * id_pessoa : INT <<PK, FK>>
+  --
+  * id_equipe : INT <<FK>>
+  * cpf : CHAR(11) <<UK>>
+  * funcao : VARCHAR(10)
+}
+
+' ---------- Demais tabelas ----------
+
+entity "concessionaria" as concessionaria {
+  * id_concessionaria : INT <<PK>>
+  --
+  * nome : VARCHAR(100)
+  * sigla : VARCHAR(20) <<UK>>
+  * uf : CHAR(2)
+}
+
+entity "obra" as obra {
+  * id_obra : INT <<PK>>
+  --
+  * id_cliente : INT <<FK>>
+  * id_engenheiro : INT <<FK>>
+  * id_concessionaria : INT <<FK>>
+  * numero_uc : VARCHAR(20)
+  * logradouro : VARCHAR(100)
+  * numero : VARCHAR(10)
+  * bairro : VARCHAR(60)
+  * cidade : VARCHAR(60)
+  * uf : CHAR(2)
+  * tipo_ligacao : VARCHAR(10)
+  * data_contrato : DATE
+  * valor_contrato : DECIMAL(12,2)
+}
+
+entity "equipe" as equipe {
+  * id_equipe : INT <<PK>>
+  --
+  * nome : VARCHAR(50) <<UK>>
+}
+
+entity "obra_equipe" as obra_equipe {
+  * id_obra : INT <<PK, FK>>
+  * id_equipe : INT <<PK, FK>>
+}
+
+entity "fabricante" as fabricante {
+  * id_fabricante : INT <<PK>>
+  --
+  * nome : VARCHAR(60) <<UK>>
+  * pais_origem : VARCHAR(60)
+}
+
+entity "equipamento" as equipamento {
+  * id_equipamento : INT <<PK>>
+  --
+  * id_fabricante : INT <<FK>>
+  * tipo : VARCHAR(20)
+  * modelo : VARCHAR(100)
+    potencia_w : INT
+  * preco_atual : DECIMAL(10,2)
+  * garantia_anos : INT
+}
+
+entity "obra_equipamento" as obra_equipamento {
+  * id_obra : INT <<PK, FK>>
+  * id_equipamento : INT <<PK, FK>>
+  --
+  * quantidade : INT
+  * valor_unitario : DECIMAL(10,2)
+}
+
+entity "etapa" as etapa {
+  * id_etapa : INT <<PK>>
+  --
+  * nome : VARCHAR(50) <<UK>>
+  * ordem : INT <<UK>>
+}
+
+entity "obra_etapa" as obra_etapa {
+  * id_obra : INT <<PK, FK>>
+  * id_etapa : INT <<PK, FK>>
+  --
+  * data_prevista : DATE
+    data_inicio : DATE
+    data_conclusao : DATE
+}
+
+' Herança (1:1 opcional do lado da especialização)
+pessoa  ||--o| cliente
+pessoa  ||--o| engenheiro
+pessoa  ||--o| colaborador
+cliente ||--o| cliente_pf
+cliente ||--o| cliente_pj
+
+' Relacionamentos
+cliente        ||--o{ obra
+engenheiro     ||--o{ obra
+concessionaria ||--o{ obra
+
+equipe ||--|{ colaborador
+
+obra   ||--o{ obra_equipe
+equipe ||--o{ obra_equipe
+
+fabricante  ||--o{ equipamento
+obra        ||--o{ obra_equipamento
+equipamento ||--o{ obra_equipamento
+
+obra  ||--o{ obra_etapa
+etapa ||--o{ obra_etapa
+
+@enduml

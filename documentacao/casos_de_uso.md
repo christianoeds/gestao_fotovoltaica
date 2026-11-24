@@ -46,23 +46,25 @@ Os casos de uso UC03, UC04, UC07, UC08 e UC09 são cadastros simples e seguem o 
 | | |
 |---|---|
 | **Ator** | Comercial |
-| **Requisitos** | RF01, RN01, RN03 |
+| **Requisitos** | RF01, RN01, RN03, RN16 |
 | **Pré-condição** | Nenhuma. |
 | **Pós-condição** | O cadastro de clientes fica atualizado. |
 
 **Fluxo principal (listar)**
 1. O ator acessa o menu **Clientes**.
-2. O sistema exibe a lista de clientes cadastrados, com as opções de inserir, editar e excluir.
+2. O sistema exibe a lista de clientes cadastrados, indicando se cada um é pessoa física ou jurídica, com as opções de inserir, editar e excluir.
 
 **Fluxo alternativo A1: inserir cliente**
 1. O ator clica em **Novo cliente**.
-2. O sistema exibe o formulário em branco.
-3. O ator preenche os dados e clica em **Salvar**.
-4. O sistema valida os dados, grava o cliente e volta para a lista com uma mensagem de sucesso.
+2. O sistema pergunta se o cliente é pessoa física ou pessoa jurídica.
+3. O ator escolhe o tipo.
+4. O sistema exibe o formulário com os dados comuns (nome, telefone, e-mail e endereço) e os campos do tipo escolhido: CPF, para pessoa física, ou CNPJ e razão social, para pessoa jurídica.
+5. O ator preenche os dados e clica em **Salvar**.
+6. O sistema valida os dados, grava o cliente de uma só vez (dados de pessoa, de cliente e do tipo escolhido) e volta para a lista com uma mensagem de sucesso.
 
 **Fluxo alternativo A2: editar cliente**
 1. O ator clica em **Editar** em um cliente da lista.
-2. O sistema exibe o formulário preenchido com os dados atuais.
+2. O sistema exibe o formulário preenchido com os dados atuais. O tipo do cliente (física ou jurídica) aparece, mas não pode ser alterado (RN16).
 3. O ator altera os dados e clica em **Salvar**.
 4. O sistema valida os dados, grava as alterações e volta para a lista com uma mensagem de sucesso.
 
@@ -115,7 +117,7 @@ Igual ao A3 do UC01.
 | | |
 |---|---|
 | **Ator** | Diretoria |
-| **Requisitos** | RF05, RN01, RN12, RN13 |
+| **Requisitos** | RF05, RN01, RN12, RN13, RN16 |
 | **Pré-condição** | Deve existir pelo menos uma equipe de instalação cadastrada. |
 | **Pós-condição** | O cadastro de colaboradores fica atualizado e todas as equipes com obras continuam completas. |
 

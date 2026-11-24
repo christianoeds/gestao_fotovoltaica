@@ -12,21 +12,54 @@ Exemplo: `CLIENTE (1,1) — CONTRATA — (0,N) OBRA`
 - o **(0,N)** ao lado de OBRA indica que **um cliente contrata de zero a muitas obras**;
 - o **(1,1)** ao lado de CLIENTE indica que **uma obra é contratada por exatamente um cliente**.
 
+## Generalização e especialização (herança)
+
+Clientes, engenheiros e colaboradores têm dados em comum: nome, telefone, e-mail e endereço. Em vez de repetir esses atributos em três entidades, eles ficam numa entidade genérica, **PESSOA**, e cada papel vira uma **especialização** que herda esses atributos e acrescenta os seus.
+
+```
+                    PESSOA
+       (nome, telefone, email, endereço)
+                      │  total, exclusiva
+         ┌────────────┼──────────────┐
+      CLIENTE     ENGENHEIRO     COLABORADOR
+         │          (crea)       (cpf, funcao)
+         │  total, exclusiva
+     ┌───┴───┐
+CLIENTE_PF  CLIENTE_PJ
+  (cpf)    (cnpj, razao_social)
+```
+
+| Especialização | Total ou parcial | Exclusiva ou sobreposta |
+|---|---|---|
+| PESSOA → CLIENTE, ENGENHEIRO, COLABORADOR | **Total**: toda pessoa cadastrada tem um papel. Não existe "pessoa" solta no sistema. | **Exclusiva**: cada pessoa cadastrada tem um único papel. |
+| CLIENTE → CLIENTE_PF, CLIENTE_PJ | **Total**: todo cliente é pessoa física ou jurídica. | **Exclusiva**: um cliente não pode ser PF e PJ ao mesmo tempo. |
+
+No diagrama, a **linha dupla** indica especialização total e a letra **"d"** (de *disjoint*) indica especialização exclusiva.
+
+**Por que existe CLIENTE entre PESSOA e PF/PJ.** A obra precisa se relacionar com "o cliente", seja ele PF ou PJ. Se CLIENTE_PF e CLIENTE_PJ herdassem direto de PESSOA, a obra precisaria de dois relacionamentos opcionais (um com PF e outro com PJ), e sempre um deles ficaria vazio. Com o nível intermediário, a obra tem um único relacionamento, CONTRATA, com CLIENTE.
+
+**Por que a primeira especialização é exclusiva.** Na prática, um colaborador pode um dia contratar uma obra. Se a especialização fosse sobreposta, essa pessoa teria o CPF guardado duas vezes (em COLABORADOR e em CLIENTE_PF), o que é redundância. Como esse caso é raro, optou-se pela especialização exclusiva: se acontecer, a pessoa é cadastrada uma vez como colaborador e outra vez como cliente.
+
+**Onde fica o CPF.** O CPF não está em PESSOA porque clientes pessoa jurídica não têm CPF e engenheiros são identificados pelo CREA. Ele aparece só nas especializações que precisam dele: CLIENTE_PF e COLABORADOR.
+
 ## Entidades
 
-O atributo identificador de cada entidade está em **negrito**.
+O atributo identificador de cada entidade está em **negrito**. As especializações não têm identificador próprio: herdam o de PESSOA.
 
 | Entidade | Atributos | Descrição |
 |---|---|---|
-| **CLIENTE** | **id_cliente**, nome, cpf_cnpj, telefone, email, cidade | Pessoa física ou jurídica que contrata uma obra. |
+| **PESSOA** | **id_pessoa**, nome, telefone, email, endereco *(composto)* | Dados comuns a todas as pessoas do sistema. Para clientes PJ, o nome é o nome fantasia. |
+| **CLIENTE** | *(herda de PESSOA)* | Pessoa que contrata obras. |
+| **CLIENTE_PF** | cpf | Cliente pessoa física. |
+| **CLIENTE_PJ** | cnpj, razao_social | Cliente pessoa jurídica. |
+| **ENGENHEIRO** | crea | Responsável técnico pelas obras. |
+| **COLABORADOR** | cpf, funcao | Membro de uma equipe, com a função de instalador ou ajudante. |
 | **CONCESSIONARIA** | **id_concessionaria**, nome, sigla, uf | Distribuidora de energia que aprova a conexão da usina à rede. |
-| **ENGENHEIRO** | **id_engenheiro**, nome, crea, telefone, email | Responsável técnico pelas obras. |
 | **EQUIPE** | **id_equipe**, nome | Equipe de instalação que executa as obras em campo. |
-| **COLABORADOR** | **id_colaborador**, nome, cpf, telefone, funcao | Membro de uma equipe, com a função de instalador ou ajudante. |
 | **FABRICANTE** | **id_fabricante**, nome, pais_origem | Marca dos equipamentos. |
 | **EQUIPAMENTO** | **id_equipamento**, tipo, modelo, potencia_w, preco_atual, garantia_anos | Item do catálogo: módulo, inversor, estrutura etc. |
 | **ETAPA** | **id_etapa**, nome, ordem | Etapa padrão pela qual toda obra passa. |
-| **OBRA** | **id_obra**, numero_uc, endereco *(composto)*, tipo_ligacao, data_contrato, valor_contrato, potencia_kwp *(derivado)* | Instalação de uma usina fotovoltaica para um cliente. |
+| **OBRA** | **id_obra**, numero_uc, endereco_instalacao *(composto)*, tipo_ligacao, data_contrato, valor_contrato, potencia_kwp *(derivado)* | Instalação de uma usina fotovoltaica para um cliente. |
 
 ## Relacionamentos
 
@@ -41,13 +74,16 @@ O atributo identificador de cada entidade está em **negrito**.
 | **UTILIZA** | OBRA (0,N) — (0,N) EQUIPAMENTO | Uma obra utiliza nenhum ou vários equipamentos. Um equipamento pode ser utilizado em nenhuma ou várias obras. | quantidade, valor_unitario |
 | **PASSA_POR** | OBRA (0,N) — (0,N) ETAPA | Uma obra passa por nenhuma ou várias etapas. Uma etapa é registrada em nenhuma ou várias obras. | data_prevista, data_inicio, data_conclusao |
 
+Os relacionamentos ligam as especializações certas: a obra se relaciona com **CLIENTE** e com **ENGENHEIRO**, e a equipe com **COLABORADOR**. Nenhum relacionamento liga diretamente em PESSOA.
+
 ## Decisões de modelagem
 
 **1. A potência da obra (kWp) é um atributo derivado.**
 Ela aparece no diagrama porque é uma informação importante da obra, mas é marcada como derivada: é calculada pela soma de quantidade × potência dos módulos utilizados (RN08). Por isso **não vai virar coluna** no modelo lógico. Guardar esse valor criaria redundância e o risco de ele ficar diferente dos equipamentos registrados.
 
-**2. O endereço da obra é um atributo composto.**
-O endereço é formado por logradouro, número, bairro, cidade e UF. No modelo lógico, cada parte vira uma coluna própria, o que atende à 1ª Forma Normal (valores atômicos) e permite consultas por cidade ou por estado.
+**2. Os endereços são atributos compostos, e existem dois diferentes.**
+Tanto o endereço da pessoa quanto o endereço de instalação da obra são formados por logradouro, número, bairro, cidade e UF. No modelo lógico, cada parte vira uma coluna própria, o que atende à 1ª Forma Normal (valores atômicos) e permite consultas por cidade ou por estado.
+Os dois endereços **não são redundantes**: o endereço da pessoa é onde o cliente mora ou tem sede, e o endereço da obra é onde a usina é instalada. Uma empresa com sede na capital pode instalar uma usina numa fazenda no interior.
 
 **3. Os relacionamentos N:N têm atributos próprios.**
 - Em **UTILIZA**, a quantidade e o valor unitário não pertencem nem à obra nem ao equipamento: dependem da combinação dos dois. O valor unitário fica aqui, e não apenas no equipamento, porque o preço do catálogo muda com o tempo e o valor cobrado em cada obra precisa ser preservado (RN07).
@@ -64,6 +100,10 @@ O tipo do equipamento (módulo, inversor, estrutura...) e a função do colabora
 **6. A etapa é uma entidade, e não apenas um atributo da obra.**
 As etapas têm nome e ordem e se repetem em todas as obras. Se cada obra guardasse colunas como "data_homologacao" e "data_instalacao", haveria um grupo repetido de atributos, o que fere a 1ª Forma Normal. Além disso, incluir uma etapa nova exigiria alterar a estrutura da tabela. Com a etapa como entidade, basta cadastrar uma nova linha.
 
+**7. Clientes, engenheiros e colaboradores são especializações de PESSOA.**
+Os atributos comuns ficam num só lugar, e cada especialização guarda apenas o que é dela. Os detalhes e as justificativas estão na seção "Generalização e especialização", acima.
+
 ## Restrições que o diagrama não consegue representar
 
-A cardinalidade **(2,N)** em COMPOE garante que a equipe tenha no mínimo dois colaboradores, mas não garante que **um deles seja instalador e o outro ajudante** (RN12). Essa regra depende do valor do atributo `funcao`. Por isso ela será validada na camada de Modelo da aplicação, e não pela estrutura do banco.
+- A cardinalidade **(2,N)** em COMPOE garante que a equipe tenha no mínimo dois colaboradores, mas não garante que **um deles seja instalador e o outro ajudante** (RN12). Essa regra depende do valor do atributo `funcao`. Por isso ela será validada na camada de Modelo da aplicação, e não pela estrutura do banco.
+- O tipo do cliente (PF ou PJ) **não pode mudar** depois do cadastro (RN16). Essa é uma regra sobre alterações, e não sobre a estrutura dos dados, por isso também fica na aplicação.

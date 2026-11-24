@@ -6,14 +6,42 @@
 ' com quantas instâncias DESSA entidade uma instância da outra se relaciona.
 ' Ex.: CLIENTE (1,1) — CONTRATA — (0,N) OBRA
 '      → um cliente contrata de 0 a N obras; uma obra é contratada por 1 cliente.
+'
+' Especialização: linha dupla (=>=) = total; "d" = exclusiva (disjunta).
 
-entity CLIENTE {
-  id_cliente <<key>>
+entity PESSOA {
+  id_pessoa <<key>>
   nome
-  cpf_cnpj
   telefone
   email
-  cidade
+  endereco {
+    logradouro
+    numero
+    bairro
+    cidade
+    uf
+  }
+}
+
+entity CLIENTE {
+}
+
+entity CLIENTE_PF {
+  cpf
+}
+
+entity CLIENTE_PJ {
+  cnpj
+  razao_social
+}
+
+entity ENGENHEIRO {
+  crea
+}
+
+entity COLABORADOR {
+  cpf
+  funcao
 }
 
 entity CONCESSIONARIA {
@@ -23,25 +51,9 @@ entity CONCESSIONARIA {
   uf
 }
 
-entity ENGENHEIRO {
-  id_engenheiro <<key>>
-  nome
-  crea
-  telefone
-  email
-}
-
 entity EQUIPE {
   id_equipe <<key>>
   nome
-}
-
-entity COLABORADOR {
-  id_colaborador <<key>>
-  nome
-  cpf
-  telefone
-  funcao
 }
 
 entity FABRICANTE {
@@ -68,7 +80,7 @@ entity ETAPA {
 entity OBRA {
   id_obra <<key>>
   numero_uc
-  endereco {
+  endereco_instalacao {
     logradouro
     numero
     bairro
@@ -110,6 +122,11 @@ relationship PASSA_POR {
   data_conclusao
 }
 
+' Generalização / especialização
+PESSOA =>= d { CLIENTE, ENGENHEIRO, COLABORADOR }
+CLIENTE =>= d { CLIENTE_PF, CLIENTE_PJ }
+
+' Relacionamentos
 CLIENTE -(1,1)- CONTRATA
 CONTRATA -(0,N)- OBRA
 
