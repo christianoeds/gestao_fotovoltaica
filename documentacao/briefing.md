@@ -2,7 +2,7 @@
 
 ## Sobre a empresa
 
-A **Derivar** é uma empresa integradora de energia solar. Ela vende, projeta e instala sistemas fotovoltaicos conectados à rede, principalmente em casas, comércios e pequenas indústrias. A equipe tem alguns engenheiros eletricistas, que assinam os projetos e acompanham as obras, e equipes de instaladores que vão a campo montar os sistemas.
+A **Derivar** é uma empresa integradora de energia solar. Ela vende, projeta e instala sistemas fotovoltaicos conectados à rede, principalmente em casas, comércios e pequenas indústrias. A equipe tem alguns engenheiros eletricistas, que assinam os projetos e acompanham as obras, e equipes de instalação que vão a campo montar os sistemas.
 
 Cada venda vira uma **obra**, que passa por várias etapas até o sistema começar a gerar energia: vistoria técnica no local, elaboração do projeto, pedido de homologação na concessionária, instalação, vistoria da concessionária e, por fim, a troca do medidor e a ligação do sistema.
 
@@ -21,7 +21,7 @@ A ideia é ter um sistema simples, que rode no navegador, para centralizar esses
 
 - **Comercial / administrativo:** cadastra clientes e obras e registra o valor do contrato.
 - **Engenheiro:** acompanha as etapas das obras pelas quais é responsável e registra os equipamentos usados.
-- **Diretoria (administrador):** cadastra engenheiros, instaladores, equipamentos e concessionárias, e acompanha os relatórios.
+- **Diretoria (administrador):** cadastra engenheiros, equipes de instalação, equipamentos e concessionárias, e acompanha os relatórios.
 
 ## O que a empresa precisa guardar
 
@@ -31,9 +31,11 @@ A ideia é ter um sistema simples, que rode no navegador, para centralizar esses
 
 **Engenheiros:** nome, número do CREA, telefone e e-mail. Cada obra tem um engenheiro responsável.
 
-**Instaladores:** nome, telefone e função na equipe (eletricista, montador, auxiliar). Uma obra pode ter vários instaladores, e um instalador trabalha em várias obras.
+**Equipes de instalação:** a Derivar trabalha com equipes fixas. Cada equipe tem **no mínimo** um instalador (eletricista) e um ajudante. Equipes que atendem obras maiores podem ter mais instaladores e mais ajudantes. Para cada equipe guardamos um nome que a identifique (por exemplo, "Equipe 01").
 
-**Obras:** cada obra pertence a um cliente, tem um engenheiro responsável e é ligada a uma concessionária. Guardamos o número da unidade consumidora (UC), o endereço da instalação, o tipo de ligação (monofásica, bifásica ou trifásica), a data de assinatura do contrato e o valor do contrato.
+**Colaboradores:** as pessoas que fazem parte das equipes. Guardamos nome, CPF, telefone, função (instalador ou ajudante) e a equipe a que pertencem. Cada colaborador faz parte de uma única equipe.
+
+**Obras:** cada obra pertence a um cliente, tem um engenheiro responsável, é executada por uma equipe de instalação e é ligada a uma concessionária. Uma mesma equipe faz várias obras ao longo do tempo. Guardamos o número da unidade consumidora (UC), o endereço da instalação, o tipo de ligação (monofásica, bifásica ou trifásica), a data de assinatura do contrato e o valor do contrato.
 
 **Etapas:** a lista padrão de etapas que toda obra percorre (vistoria técnica, projeto, homologação, instalação, vistoria da concessionária, ligação), em ordem.
 
