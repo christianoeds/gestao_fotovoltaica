@@ -1,0 +1,137 @@
+@startchen modelo_conceitual
+' Modelo conceitual (notação de Peter Chen): Gestão Fotovoltaica
+' Para gerar a imagem: plugin PlantUML do PhpStorm.
+'
+' Leitura das cardinalidades: o par (mín,máx) ao lado de uma entidade indica
+' com quantas instâncias DESSA entidade uma instância da outra se relaciona.
+' Ex.: CLIENTE (1,1) — CONTRATA — (0,N) OBRA
+'      → um cliente contrata de 0 a N obras; uma obra é contratada por 1 cliente.
+
+entity CLIENTE {
+  id_cliente <<key>>
+  nome
+  cpf_cnpj
+  telefone
+  email
+  cidade
+}
+
+entity CONCESSIONARIA {
+  id_concessionaria <<key>>
+  nome
+  sigla
+  uf
+}
+
+entity ENGENHEIRO {
+  id_engenheiro <<key>>
+  nome
+  crea
+  telefone
+  email
+}
+
+entity EQUIPE {
+  id_equipe <<key>>
+  nome
+}
+
+entity COLABORADOR {
+  id_colaborador <<key>>
+  nome
+  cpf
+  telefone
+  funcao
+}
+
+entity FABRICANTE {
+  id_fabricante <<key>>
+  nome
+  pais_origem
+}
+
+entity EQUIPAMENTO {
+  id_equipamento <<key>>
+  tipo
+  modelo
+  potencia_w
+  preco_atual
+  garantia_anos
+}
+
+entity ETAPA {
+  id_etapa <<key>>
+  nome
+  ordem
+}
+
+entity OBRA {
+  id_obra <<key>>
+  numero_uc
+  endereco {
+    logradouro
+    numero
+    bairro
+    cidade
+    uf
+  }
+  tipo_ligacao
+  data_contrato
+  valor_contrato
+  potencia_kwp <<derived>>
+}
+
+relationship CONTRATA {
+}
+
+relationship RESPONSAVEL_POR {
+}
+
+relationship EXECUTA {
+}
+
+relationship CONECTA {
+}
+
+relationship COMPOE {
+}
+
+relationship FABRICA {
+}
+
+relationship UTILIZA {
+  quantidade
+  valor_unitario
+}
+
+relationship PASSA_POR {
+  data_prevista
+  data_inicio
+  data_conclusao
+}
+
+CLIENTE -(1,1)- CONTRATA
+CONTRATA -(0,N)- OBRA
+
+ENGENHEIRO -(1,1)- RESPONSAVEL_POR
+RESPONSAVEL_POR -(0,N)- OBRA
+
+EQUIPE -(1,1)- EXECUTA
+EXECUTA -(0,N)- OBRA
+
+CONCESSIONARIA -(1,1)- CONECTA
+CONECTA -(0,N)- OBRA
+
+EQUIPE -(1,1)- COMPOE
+COMPOE -(2,N)- COLABORADOR
+
+FABRICANTE -(1,1)- FABRICA
+FABRICA -(0,N)- EQUIPAMENTO
+
+OBRA -(0,N)- UTILIZA
+UTILIZA -(0,N)- EQUIPAMENTO
+
+OBRA -(0,N)- PASSA_POR
+PASSA_POR -(0,N)- ETAPA
+
+@endchen
