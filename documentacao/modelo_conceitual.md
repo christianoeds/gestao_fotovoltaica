@@ -48,18 +48,18 @@ O atributo identificador de cada entidade está em **negrito**. As especializaç
 
 | Entidade | Atributos | Descrição |
 |---|---|---|
-| **PESSOA** | **id_pessoa**, nome, telefone, email, endereco *(composto)* | Dados comuns a todas as pessoas do sistema. Para clientes PJ, o nome é o nome fantasia. |
+| **PESSOA** | **id**, nome, telefone, email, endereco *(composto)* | Dados comuns a todas as pessoas do sistema. Para clientes PJ, o nome é o nome fantasia. |
 | **CLIENTE** | *(herda de PESSOA)* | Pessoa que contrata obras. |
 | **CLIENTE_PF** | cpf | Cliente pessoa física. |
 | **CLIENTE_PJ** | cnpj, razao_social | Cliente pessoa jurídica. |
 | **ENGENHEIRO** | crea | Responsável técnico pelas obras. |
 | **COLABORADOR** | cpf, funcao | Membro de uma equipe, com a função de instalador ou ajudante. |
-| **CONCESSIONARIA** | **id_concessionaria**, nome, sigla, uf | Distribuidora de energia que aprova a conexão da usina à rede. |
-| **EQUIPE** | **id_equipe**, nome | Equipe de instalação que executa as obras em campo. |
-| **FABRICANTE** | **id_fabricante**, nome, pais_origem | Marca dos equipamentos. |
-| **EQUIPAMENTO** | **id_equipamento**, tipo, modelo, potencia_w, preco_atual, garantia_anos | Item do catálogo: módulo, inversor, estrutura etc. |
-| **ETAPA** | **id_etapa**, nome, ordem | Etapa padrão pela qual toda obra passa. |
-| **OBRA** | **id_obra**, numero_uc, endereco_instalacao *(composto)*, tipo_ligacao, data_contrato, valor_contrato, potencia_kwp *(derivado)* | Instalação de uma usina fotovoltaica para um cliente. |
+| **CONCESSIONARIA** | **id**, nome, sigla, uf | Distribuidora de energia que aprova a conexão da usina à rede. |
+| **EQUIPE** | **id**, nome | Equipe de instalação que executa as obras em campo. |
+| **FABRICANTE** | **id**, nome, pais_origem | Marca dos equipamentos. |
+| **EQUIPAMENTO** | **id**, tipo, modelo, potencia_w, preco_atual, garantia_anos | Item do catálogo: módulo, inversor, estrutura etc. |
+| **ETAPA** | **id**, nome, ordem | Etapa padrão pela qual toda obra passa. |
+| **OBRA** | **id**, numero_uc, endereco_instalacao *(composto)*, tipo_ligacao, data_contrato, valor_contrato, potencia_kwp *(derivado)* | Instalação de uma usina fotovoltaica para um cliente. |
 
 ## Relacionamentos
 

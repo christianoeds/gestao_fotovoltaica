@@ -8,9 +8,9 @@ O diagrama está em [`modelo_logico.puml`](modelo_logico.puml), na notação **p
 
 | No modelo conceitual | No modelo lógico |
 |---|---|
-| Cada **entidade** | Uma tabela, com o identificador como chave primária (`id_...`, autoincremento). |
+| Cada **entidade** | Uma tabela, com o identificador como chave primária (`id`, autoincremento). |
 | **Especialização** (herança) | Uma tabela para cada entidade da hierarquia. A chave primária da especialização é também chave estrangeira para a tabela mãe. Detalhes na próxima seção. |
-| Relacionamento **1:N** (CONTRATA, RESPONSAVEL_POR, CONECTA, COMPOE, FABRICA) | Uma **chave estrangeira** na tabela do lado N. Ex.: `obra.id_cliente` aponta para `cliente`. |
+| Relacionamento **1:N** (CONTRATA, RESPONSAVEL_POR, CONECTA, COMPOE, FABRICA) | Uma **chave estrangeira** na tabela do lado N. Ex.: `obra.cliente_id` aponta para `cliente`. |
 | Relacionamento **N:N** (EXECUTA, UTILIZA, PASSA_POR) | Uma **tabela associativa**, com chave primária composta pelas duas chaves estrangeiras e com os atributos do relacionamento. |
 | **Atributo composto** (endereços) | Uma coluna para cada parte: `logradouro`, `numero`, `bairro`, `cidade`, `uf`. |
 | **Atributo derivado** (potência em kWp) | **Não vira coluna.** É calculado nas consultas a partir de `obra_equipamento` e `equipamento` (RN08). |
@@ -23,10 +23,10 @@ Existem três estratégias comuns para levar uma especialização para tabelas:
 |---|---|---|
 | Tabela única | Uma tabela `pessoa` com todas as colunas de todas as especializações (`cpf`, `cnpj`, `crea`, `funcao`...). | Cada linha teria várias colunas sempre vazias, e não daria para tornar `crea` obrigatório só para engenheiros. |
 | Só as especializações | Tabelas `cliente_pf`, `cliente_pj`, `engenheiro` e `colaborador`, cada uma repetindo nome, telefone e endereço. | Repete as colunas comuns, e a obra precisaria de duas chaves estrangeiras opcionais para o cliente (PF ou PJ). |
-| **Uma tabela por entidade** ✔ | `pessoa` com os dados comuns e uma tabela para cada especialização, ligadas pela chave. | **Escolhida.** Não repete colunas, não deixa colunas vazias e mantém a obra com um único `id_cliente`. |
+| **Uma tabela por entidade** ✔ | `pessoa` com os dados comuns e uma tabela para cada especialização, ligadas pela chave. | **Escolhida.** Não repete colunas, não deixa colunas vazias e mantém a obra com um único `cliente_id`. |
 
 Na estratégia escolhida:
-- a chave primária de cada especialização **é a mesma** da pessoa: o cliente com `id_pessoa = 7` tem uma linha em `pessoa`, uma em `cliente` e uma em `cliente_pf` (ou `cliente_pj`), todas com `id_pessoa = 7`;
+- a chave primária de cada especialização **é a mesma** da pessoa: o cliente com `id = 7` tem uma linha em `pessoa`, uma em `cliente` e uma em `cliente_pf` (ou `cliente_pj`), todas com `id = 7`. Nas especializações, a coluna `id` é ao mesmo tempo chave primária e chave estrangeira;
 - por isso a relação entre a tabela mãe e cada especialização é **1:1**;
 - para montar os dados completos de um cliente, de um engenheiro ou de um colaborador, as consultas fazem um **JOIN** com `pessoa`.
 
@@ -42,46 +42,46 @@ Notação: a chave primária está em **negrito** e as chaves estrangeiras estã
 
 **Herança**
 
-- pessoa (**id_pessoa**, categoria, nome, telefone, email, logradouro, numero, bairro, cidade, uf)
-- cliente (***id_pessoa***, tipo)
-  - *id_pessoa* referencia pessoa
-- cliente_pf (***id_pessoa***, cpf)
-  - *id_pessoa* referencia cliente
-- cliente_pj (***id_pessoa***, cnpj, razao_social)
-  - *id_pessoa* referencia cliente
-- engenheiro (***id_pessoa***, crea)
-  - *id_pessoa* referencia pessoa
-- colaborador (***id_pessoa***, *id_equipe*, cpf, funcao)
-  - *id_pessoa* referencia pessoa
-  - *id_equipe* referencia equipe
+- pessoa (**id**, categoria, nome, telefone, email, logradouro, numero, bairro, cidade, uf)
+- cliente (***id***, tipo)
+  - *id* referencia pessoa
+- cliente_pf (***id***, cpf)
+  - *id* referencia cliente
+- cliente_pj (***id***, cnpj, razao_social)
+  - *id* referencia cliente
+- engenheiro (***id***, crea)
+  - *id* referencia pessoa
+- colaborador (***id***, *equipe_id*, cpf, funcao)
+  - *id* referencia pessoa
+  - *equipe_id* referencia equipe
 
 **Tabelas independentes**
 
-- concessionaria (**id_concessionaria**, nome, sigla, uf)
-- equipe (**id_equipe**, nome)
-- fabricante (**id_fabricante**, nome, pais_origem)
-- etapa (**id_etapa**, nome, ordem)
+- concessionaria (**id**, nome, sigla, uf)
+- equipe (**id**, nome)
+- fabricante (**id**, nome, pais_origem)
+- etapa (**id**, nome, ordem)
 
 **Tabelas com chave estrangeira**
 
-- equipamento (**id_equipamento**, *id_fabricante*, tipo, modelo, potencia_w, preco_atual, garantia_anos)
-  - *id_fabricante* referencia fabricante
-- obra (**id_obra**, *id_cliente*, *id_engenheiro*, *id_concessionaria*, numero_uc, logradouro, numero, bairro, cidade, uf, tipo_ligacao, data_contrato, valor_contrato)
-  - *id_cliente* referencia cliente (id_pessoa)
-  - *id_engenheiro* referencia engenheiro (id_pessoa)
-  - *id_concessionaria* referencia concessionaria
+- equipamento (**id**, *fabricante_id*, tipo, modelo, potencia_w, preco_atual, garantia_anos)
+  - *fabricante_id* referencia fabricante
+- obra (**id**, *cliente_id*, *engenheiro_id*, *concessionaria_id*, numero_uc, logradouro, numero, bairro, cidade, uf, tipo_ligacao, data_contrato, valor_contrato)
+  - *cliente_id* referencia cliente (id)
+  - *engenheiro_id* referencia engenheiro (id)
+  - *concessionaria_id* referencia concessionaria
 
 **Tabelas associativas (N:N)**
 
-- obra_equipe (***id_obra***, ***id_equipe***)
-  - *id_obra* referencia obra
-  - *id_equipe* referencia equipe
-- obra_equipamento (***id_obra***, ***id_equipamento***, quantidade, valor_unitario)
-  - *id_obra* referencia obra
-  - *id_equipamento* referencia equipamento
-- obra_etapa (***id_obra***, ***id_etapa***, data_prevista, data_inicio, data_conclusao)
-  - *id_obra* referencia obra
-  - *id_etapa* referencia etapa
+- obra_equipe (***obra_id***, ***equipe_id***)
+  - *obra_id* referencia obra
+  - *equipe_id* referencia equipe
+- obra_equipamento (***obra_id***, ***equipamento_id***, quantidade, valor_unitario)
+  - *obra_id* referencia obra
+  - *equipamento_id* referencia equipamento
+- obra_etapa (***obra_id***, ***etapa_id***, data_prevista, data_inicio, data_conclusao)
+  - *obra_id* referencia obra
+  - *etapa_id* referencia etapa
 
 No total são **15 tabelas**: 6 da hierarquia de pessoas, 6 das demais entidades e 3 associativas.
 
@@ -111,6 +111,7 @@ As chaves primárias compostas das tabelas associativas também funcionam como r
 | obra | `valor_contrato` > 0 | RN05 |
 | equipamento | `tipo` deve ser `modulo`, `inversor`, `microinversor`, `estrutura`, `string_box` ou `cabo` | Decisão 5 do modelo conceitual |
 | equipamento | `preco_atual` > 0, `garantia_anos` ≥ 0 e `potencia_w` > 0 (quando informada) | Consistência dos dados |
+| etapa | `ordem` > 0 | A sequência das etapas começa em 1. |
 | obra_equipamento | `quantidade` > 0 e `valor_unitario` > 0 | RN05 |
 | obra_etapa | `data_conclusao` ≥ `data_inicio` | RN06 |
 | obra_etapa | `data_conclusao` só pode ser preenchida se `data_inicio` também estiver | Uma etapa não termina sem ter começado. |
@@ -125,7 +126,7 @@ Há duas regras de exclusão, conforme o tipo de ligação:
 | **Herança** (especialização → tabela mãe) | `ON DELETE CASCADE` | Ao excluir uma pessoa, as linhas dela em `cliente`, `cliente_pf`, `cliente_pj`, `engenheiro` ou `colaborador` são excluídas junto. A aplicação só precisa excluir de `pessoa`. |
 | **Todas as outras** | `ON DELETE RESTRICT` | O banco recusa a exclusão de um registro que ainda é referenciado. Isso implementa a RN03 no próprio banco. |
 
-As duas regras trabalham juntas. Se a aplicação tentar excluir a pessoa de um cliente que tem obras, o `CASCADE` tenta excluir a linha de `cliente`, mas o `RESTRICT` de `obra.id_cliente` impede, e **a exclusão inteira é cancelada**. O cliente com obras continua intacto, e a aplicação mostra a mensagem de erro.
+As duas regras trabalham juntas. Se a aplicação tentar excluir a pessoa de um cliente que tem obras, o `CASCADE` tenta excluir a linha de `cliente`, mas o `RESTRICT` de `obra.cliente_id` impede, e **a exclusão inteira é cancelada**. O cliente com obras continua intacto, e a aplicação mostra a mensagem de erro.
 
 ### Campos opcionais (aceitam NULL)
 | Coluna | Por quê |
@@ -154,15 +155,15 @@ Para garantir a RN16, **toda inserção de pessoa é feita numa transação**. P
 
 ### 2ª Forma Normal: sem dependência parcial da chave
 A 2FN só pode ser violada em tabelas com chave primária composta, que aqui são as três associativas:
-- em `obra_equipamento`, a quantidade e o valor unitário dependem da **obra e do equipamento juntos**. O modelo do equipamento, por exemplo, depende só de `id_equipamento`, por isso fica na tabela `equipamento`, e não aqui;
-- em `obra_etapa`, as datas dependem da **obra e da etapa juntas**. O nome da etapa depende só de `id_etapa` e fica em `etapa`;
+- em `obra_equipamento`, a quantidade e o valor unitário dependem da **obra e do equipamento juntos**. O modelo do equipamento, por exemplo, depende só de `equipamento_id`, por isso fica na tabela `equipamento`, e não aqui;
+- em `obra_etapa`, as datas dependem da **obra e da etapa juntas**. O nome da etapa depende só de `etapa_id` e fica em `etapa`;
 - `obra_equipe` não tem colunas além da chave.
 
 ### 3ª Forma Normal: sem dependência transitiva
 Nenhuma coluna não chave depende de outra coluna não chave:
-- `obra` guarda apenas `id_cliente`, e não o nome ou o telefone do cliente;
-- `colaborador` guarda apenas `id_equipe`, e não o nome da equipe;
-- `equipamento` guarda apenas `id_fabricante`, e não o país do fabricante;
+- `obra` guarda apenas `cliente_id`, e não o nome ou o telefone do cliente;
+- `colaborador` guarda apenas `equipe_id`, e não o nome da equipe;
+- `equipamento` guarda apenas `fabricante_id`, e não o país do fabricante;
 - os dados comuns das pessoas ficam só em `pessoa`, sem cópia nas especializações;
 - a potência da obra **não é armazenada**, porque depende dos equipamentos e seria uma dependência transitiva (e uma redundância).
 
@@ -173,5 +174,7 @@ Nenhuma coluna não chave depende de outra coluna não chave:
 - **A UC não é única.** Uma mesma unidade consumidora pode receber uma segunda obra, por exemplo na ampliação de um sistema que já existe. Por isso `numero_uc` não tem restrição de unicidade.
 - **O mesmo equipamento aparece uma vez por obra.** Como a chave de `obra_equipamento` é (obra, equipamento), se a obra usa 20 módulos do mesmo modelo, isso é **uma linha com quantidade 20**, e não 20 linhas.
 - **COMPOE aparece como "um para um ou muitos"** no diagrama (`||--|{`). A notação pé de galinha não consegue mostrar o mínimo de 2 colaboradores do modelo conceitual. Essa regra é garantida pela aplicação (RN12).
-- **Nomes das chaves estrangeiras da obra.** As colunas `obra.id_cliente` e `obra.id_engenheiro` apontam para `cliente.id_pessoa` e `engenheiro.id_pessoa`. Os nomes foram mantidos como `id_cliente` e `id_engenheiro` para deixar claro o papel de cada chave dentro da obra.
+- **Padrão de nomes das chaves.** Toda chave primária se chama `id`, e toda chave estrangeira se chama `nometabela_id`, indicando a tabela para onde aponta: `obra.cliente_id` aponta para `cliente.id`, e `colaborador.equipe_id` aponta para `equipe.id`. Há duas situações especiais:
+  - nas **especializações** (`cliente`, `cliente_pf`, `cliente_pj`, `engenheiro`, `colaborador`), a chave primária também é chave estrangeira para a tabela mãe. Ela segue a regra da chave primária e se chama `id`;
+  - nas **tabelas associativas**, não existe coluna `id`: a chave primária é composta pelas duas chaves estrangeiras, que seguem a regra `nometabela_id` (por exemplo, `obra_id` e `equipe_id`).
 - **Povoamento.** Com a herança, `pessoa` recebe uma linha para cada cliente, engenheiro e colaborador. Para cumprir o mínimo de 10 registros por tabela, são necessários pelo menos 10 clientes PF, 10 clientes PJ, 10 engenheiros e 20 colaboradores (10 equipes com um instalador e um ajudante), ou seja, **50 pessoas ou mais**.

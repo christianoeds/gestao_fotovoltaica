@@ -10,7 +10,7 @@
 ' Especialização: linha dupla (=>=) = total; "d" = exclusiva (disjunta).
 
 entity PESSOA {
-  id_pessoa <<key>>
+  id <<key>>
   nome
   telefone
   email
@@ -45,25 +45,25 @@ entity COLABORADOR {
 }
 
 entity CONCESSIONARIA {
-  id_concessionaria <<key>>
+  id <<key>>
   nome
   sigla
   uf
 }
 
 entity EQUIPE {
-  id_equipe <<key>>
+  id <<key>>
   nome
 }
 
 entity FABRICANTE {
-  id_fabricante <<key>>
+  id <<key>>
   nome
   pais_origem
 }
 
 entity EQUIPAMENTO {
-  id_equipamento <<key>>
+  id <<key>>
   tipo
   modelo
   potencia_w
@@ -72,13 +72,13 @@ entity EQUIPAMENTO {
 }
 
 entity ETAPA {
-  id_etapa <<key>>
+  id <<key>>
   nome
   ordem
 }
 
 entity OBRA {
-  id_obra <<key>>
+  id <<key>>
   numero_uc
   endereco_instalacao {
     logradouro
