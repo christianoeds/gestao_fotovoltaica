@@ -42,13 +42,12 @@ A chave única é o par (`nome`, `uf`), porque existem cidades com o mesmo nome 
 ## Hierarquia de pessoas
 
 ### pessoa
-Dados comuns a clientes e engenheiros. Toda linha desta tabela tem uma linha correspondente em `cliente` ou em `engenheiro` (RN12).
+Dados comuns a clientes e engenheiros. Toda linha desta tabela tem uma linha correspondente em `cliente`, em `engenheiro` ou nas duas, porque a mesma pessoa pode ter os dois papéis (RN12).
 
 | Coluna | Tipo | Nulo | Chave | Restrições | Descrição |
 |---|---|---|---|---|---|
 | id | INT | Não | PK | `AUTO_INCREMENT` | Identificador da pessoa. |
 | cidade_id | INT | Não | FK | | Cidade onde a pessoa mora. |
-| categoria | VARCHAR(10) | Não | | `CHECK` em (`cliente`, `engenheiro`) | Papel da pessoa no sistema. Indica em qual especialização estão os dados próprios dela. |
 | nome | VARCHAR(100) | Não | | | Nome completo. Para empresas, o nome usado no dia a dia. |
 | telefone | VARCHAR(11) | Não | | Só números, com DDD | Telefone de contato. Ex.: `62988887777`. |
 | email | VARCHAR(100) | Sim | | | E-mail de contato. Opcional. |

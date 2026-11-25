@@ -53,7 +53,7 @@ Os casos de uso UC04, UC05, UC06 e UC07 são cadastros simples e seguem o mesmo 
 
 **Fluxo alternativo A1: inserir cliente**
 1. O ator clica em **Novo cliente**.
-2. O sistema exibe o formulário em branco, com os campos nome, CPF ou CNPJ, telefone, e-mail, endereço e uma lista de seleção de cidades.
+2. O sistema exibe o formulário em branco, com os campos nome, CPF ou CNPJ, telefone, e-mail, endereço e uma lista de seleção de cidades. Se o cliente já estiver cadastrado como engenheiro, o ator pode escolhê-lo numa lista, e o sistema aproveita os dados de pessoa dele (RN12).
 3. O ator preenche os dados e clica em **Salvar**.
 4. O sistema valida os dados, grava o cliente de uma só vez (dados de pessoa e de cliente, numa transação) e volta para a lista com uma mensagem de sucesso.
 
@@ -67,7 +67,7 @@ Os casos de uso UC04, UC05, UC06 e UC07 são cadastros simples e seguem o mesmo 
 1. O ator clica em **Excluir** em um cliente da lista.
 2. O sistema pede uma confirmação.
 3. O ator confirma.
-4. O sistema exclui o cliente (e os dados de pessoa dele) e volta para a lista com uma mensagem de sucesso.
+4. O sistema exclui o cliente e volta para a lista com uma mensagem de sucesso. Os dados de pessoa também são excluídos, a menos que a pessoa seja também engenheiro (RN12).
 
 **Fluxos de exceção**
 - **E1, CPF/CNPJ já cadastrado ou inválido (RN01):** em A1 ou A2, se o documento já pertencer a outro cliente ou não tiver 11 dígitos (CPF) nem 14 dígitos (CNPJ), o sistema não grava e avisa o erro.

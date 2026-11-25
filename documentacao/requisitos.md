@@ -68,7 +68,7 @@ Cada relatório corresponde a uma das consultas SQL exigidas no trabalho.
 | RN09 | O tempo de homologação é o número de dias entre a data de protocolo e a data de aprovação. |
 | RN10 | A garantia de um equipamento é contada a partir da data de conclusão da obra. |
 | RN11 | Uma obra está atrasada quando a data atual já passou da data prevista e a data de conclusão ainda não foi preenchida. |
-| RN12 | Toda pessoa cadastrada é cliente ou engenheiro, nunca os dois. Os dados da pessoa e do cliente (ou do engenheiro) são gravados juntos, e excluir um cliente ou engenheiro exclui também os dados da pessoa. |
+| RN12 | Toda pessoa cadastrada é cliente, engenheiro ou os dois. Os dados da pessoa são cadastrados uma só vez, mesmo que ela tenha os dois papéis. Ao excluir um cliente ou um engenheiro, os dados da pessoa só são excluídos se ela não tiver mais nenhum papel. |
 | RN13 | Não pode haver duas cidades com o mesmo nome no mesmo estado. |
 
 ## Requisitos não funcionais

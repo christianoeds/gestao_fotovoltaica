@@ -22,8 +22,8 @@ Clientes e engenheiros têm vários dados em comum: nome, telefone, e-mail e end
 | **ENGENHEIRO** | `crea`: o registro no conselho de engenharia |
 
 As especializações herdam o identificador e todos os atributos de PESSOA. A especialização é:
-- **total** (linha dupla no diagrama): toda pessoa cadastrada é cliente ou engenheiro, não existe "só pessoa";
-- **exclusiva** (letra **d**, de *disjunta*): uma pessoa não pode ser cliente e engenheiro ao mesmo tempo (RN12).
+- **total** (linha dupla no diagrama): toda pessoa cadastrada tem pelo menos um papel, não existe "só pessoa";
+- **sobreposta** (letra **o**, de *overlapping*): uma pessoa pode ser cliente e engenheiro ao mesmo tempo (RN12). Por exemplo, um engenheiro da Derivar que instala uma usina na própria casa vira cliente também, sem precisar ser cadastrado de novo.
 
 **Por que PF e PJ não são especializações de CLIENTE.** Pessoa física e jurídica só se diferenciam pelo documento: o CPF tem 11 dígitos e o CNPJ tem 14. Criar duas especializações só para guardar um campo cada deixaria o modelo mais complexo sem ganho real. Por isso, CLIENTE tem um único atributo `cpfCnpj`, e o tipo de cliente é deduzido pelo tamanho do documento.
 

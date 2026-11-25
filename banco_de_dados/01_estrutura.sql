@@ -55,11 +55,11 @@ CREATE TABLE cidade (
 
 -- -----------------------------------------------------------------------------
 -- pessoa: dados comuns a clientes e engenheiros
+-- (herança sobreposta: a mesma pessoa pode ser cliente e engenheiro)
 -- -----------------------------------------------------------------------------
 CREATE TABLE pessoa (
     id          INT           NOT NULL AUTO_INCREMENT,
     cidade_id   INT           NOT NULL,
-    categoria   VARCHAR(10)   NOT NULL,
     nome        VARCHAR(100)  NOT NULL,
     telefone    VARCHAR(11)   NOT NULL,
     email       VARCHAR(100)  NULL,
@@ -68,12 +68,11 @@ CREATE TABLE pessoa (
     bairro      VARCHAR(60)   NOT NULL,
 
     CONSTRAINT pk_pessoa PRIMARY KEY (id),
-    CONSTRAINT ck_pessoa_categoria CHECK (categoria IN ('cliente', 'engenheiro')),
     CONSTRAINT fk_pessoa_cidade FOREIGN KEY (cidade_id)
         REFERENCES cidade (id)
         ON DELETE RESTRICT
 ) ENGINE = InnoDB
-  COMMENT = 'Dados comuns a clientes e engenheiros (RN12).';
+  COMMENT = 'Dados comuns a clientes e engenheiros. A mesma pessoa pode ter os dois papéis (RN12).';
 
 -- -----------------------------------------------------------------------------
 -- cliente: especialização de pessoa (quem contrata obras)

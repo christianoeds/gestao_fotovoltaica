@@ -27,7 +27,7 @@ A ideia é ter um sistema simples, que rode no navegador, para centralizar esses
 
 **Cidades:** as cidades onde moram os clientes e engenheiros e onde ficam as obras, com o nome e o estado (UF).
 
-**Pessoas:** clientes e engenheiros têm dados em comum: nome, telefone, e-mail e endereço (rua, número, bairro e cidade). Cada pessoa cadastrada é cliente ou engenheiro.
+**Pessoas:** clientes e engenheiros têm dados em comum: nome, telefone, e-mail e endereço (rua, número, bairro e cidade). Uma pessoa pode ser cliente, engenheiro ou os dois ao mesmo tempo: por exemplo, um engenheiro da Derivar que instala uma usina na própria casa. Nesse caso, os dados dela são cadastrados uma só vez.
 
 **Clientes:** quem contrata a obra. Pode ser pessoa física ou jurídica. Além dos dados comuns de pessoa, guardamos um único documento: o **CPF**, se for pessoa física, ou o **CNPJ**, se for empresa. Para empresas, o nome guardado é o nome usado no dia a dia. Um cliente pode ter várias obras, por exemplo uma na casa e outra no comércio.
 

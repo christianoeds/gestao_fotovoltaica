@@ -23,9 +23,9 @@ Foi usada a estratégia de **uma tabela por entidade**: `pessoa` guarda os dados
 
 Cada especialização tem o **próprio `id`** (com `AUTO_INCREMENT`) e uma coluna **`pessoa_id`**, que é chave estrangeira para `pessoa` e é **única**. O `UNIQUE` garante que cada pessoa tenha no máximo um registro de cliente e no máximo um de engenheiro, o que faz do relacionamento um 1:1. As outras tabelas apontam para a especialização: `obra.cliente_id` aponta para `cliente.id`, e não para `pessoa.id`.
 
-A coluna **`pessoa.categoria`** (`cliente` ou `engenheiro`) indica o papel de cada pessoa. Ela facilita as listagens e ajuda a aplicação a garantir que uma pessoa não seja cliente e engenheiro ao mesmo tempo (RN12).
+Como a especialização é **sobreposta**, a mesma pessoa pode ter uma linha em `cliente` e outra em `engenheiro` (RN12). Por isso `pessoa` não tem uma coluna de "tipo" ou "categoria": uma coluna só não daria conta de quem tem os dois papéis. O papel de cada pessoa é descoberto pela existência da linha na especialização.
 
-Como os dados de uma pessoa ficam em duas tabelas, o cadastro de um cliente ou engenheiro grava em `pessoa` e depois na especialização dentro de uma **transação** (RNF13): ou grava nas duas, ou não grava em nenhuma. Na exclusão, basta excluir a linha de `pessoa`, e a chave estrangeira com `ON DELETE CASCADE` exclui a especialização junto.
+Como os dados de uma pessoa ficam em duas tabelas, o cadastro de um cliente ou engenheiro grava em `pessoa` e depois na especialização dentro de uma **transação** (RNF13): ou grava nas duas, ou não grava em nenhuma. Na exclusão de um cliente, a aplicação exclui a linha de `cliente` e, se a pessoa não for também engenheiro, exclui a linha de `pessoa`. Se a linha de `pessoa` for excluída diretamente, a chave estrangeira com `ON DELETE CASCADE` exclui as especializações junto.
 
 O cliente não tem coluna de tipo (pessoa física ou jurídica): o tipo é deduzido pelo tamanho de `cpfCnpj`, com 11 dígitos para CPF e 14 para CNPJ. Guardar o tipo seria redundante e poderia criar inconsistências, como um cliente marcado como pessoa física com um CNPJ.
 
@@ -34,7 +34,7 @@ O cliente não tem coluna de tipo (pessoa física ou jurídica): o tipo é deduz
 Notação: chave primária em **negrito e itálico**, chave estrangeira em *itálico*.
 
 - **cidade** (***id***, nome, uf)
-- **pessoa** (***id***, *cidade_id*, categoria, nome, telefone, email, logradouro, numero, bairro)
+- **pessoa** (***id***, *cidade_id*, nome, telefone, email, logradouro, numero, bairro)
 - **cliente** (***id***, *pessoa_id*, cpfCnpj)
 - **engenheiro** (***id***, *pessoa_id*, crea)
 - **concessionaria** (***id***, nome, sigla, uf)
@@ -61,7 +61,6 @@ Notação: chave primária em **negrito e itálico**, chave estrangeira em *itá
 
 | Tabela | Regra |
 |---|---|
-| pessoa | `categoria` em (`cliente`, `engenheiro`) |
 | cliente | `cpfCnpj` só com números e com 11 ou 14 dígitos (RN01) |
 | equipamento | `tipo` em (`modulo`, `inversor`, `microinversor`, `estrutura`, `string_box`, `cabo`) |
 | equipamento | `potenciaW` > 0, `precoAtual` > 0, `garantiaAnos` >= 0 |
@@ -93,7 +92,7 @@ Repare no efeito combinado: excluir a pessoa de um cliente com obras é bloquead
 
 ### Regras que ficam na aplicação
 
-- Uma pessoa não pode ser cliente e engenheiro ao mesmo tempo (RN12): a aplicação grava a `categoria` e só cria o registro na especialização correspondente.
+- Toda pessoa deve ter pelo menos um papel, e os dados da pessoa só são excluídos quando ela não tiver mais nenhum (RN12).
 - O valor unitário sugerido a partir do preço do catálogo (RN07).
 - Os cálculos de kWp, dias de homologação e vencimento de garantia (RN08 a RN11), feitos nas consultas.
 
@@ -119,4 +118,4 @@ Só a tabela `obra_equipamento` tem chave composta. Os atributos dela (`quantida
 ## Observações de modelagem
 
 - **Nomes:** as tabelas ficam no singular e em *snake_case*. As colunas comuns ficam em *camelCase* (`dataContrato`, `valorUnitario`), e as chaves estrangeiras seguem o padrão `tabela_id` (`cliente_id`). É o mesmo padrão do banco de exemplo da disciplina.
-- **Povoamento:** com 10 clientes e 10 engenheiros, a tabela `pessoa` terá pelo menos 20 linhas.
+- **Povoamento:** com 10 clientes e 10 engenheiros, e pelo menos um engenheiro que também é cliente para mostrar a sobreposição, a tabela `pessoa` terá cerca de 19 linhas.

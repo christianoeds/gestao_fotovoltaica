@@ -7,7 +7,7 @@
 ' Ex.: CLIENTE (1,1) — CONTRATA — (0,N) OBRA
 '      → um cliente contrata de 0 a N obras; uma obra é contratada por 1 cliente.
 '
-' Especialização: linha dupla (=>=) = total; "d" = exclusiva (disjunta).
+' Especialização: linha dupla (=>=) = total; "o" = sobreposta (overlapping).
 
 entity CIDADE {
   id <<key>>
@@ -99,7 +99,7 @@ relationship UTILIZA {
 }
 
 ' Generalização / especialização
-PESSOA =>= d { CLIENTE, ENGENHEIRO }
+PESSOA =>= o { CLIENTE, ENGENHEIRO }
 
 ' Relacionamentos
 CIDADE -(1,1)- MORA_EM

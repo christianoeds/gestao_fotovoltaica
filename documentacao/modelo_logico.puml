@@ -23,7 +23,6 @@ entity "pessoa" as pessoa {
   * id : INT <<PK>>
   --
   * cidade_id : INT <<FK>>
-  * categoria : VARCHAR(10)
   * nome : VARCHAR(100)
   * telefone : VARCHAR(11)
     email : VARCHAR(100)
