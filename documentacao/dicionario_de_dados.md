@@ -8,14 +8,14 @@ Este documento descreve cada tabela e cada coluna do banco `gestao_fotovoltaica`
 |---|---|
 | **Banco** | MariaDB 10.4, motor **InnoDB** (necessário para chaves estrangeiras e transações), codificação `utf8mb4` com ordenação `utf8mb4_unicode_ci`. |
 | **Nomes** | Tabelas e colunas em português, minúsculas, sem acentos, com palavras separadas por `_` (*snake_case*). Nomes de tabela no singular. |
-| **Chaves primárias** | Sempre `id`, tipo `INT`, com `AUTO_INCREMENT`. Nas especializações (`cliente`, `cliente_pf`, `cliente_pj`, `engenheiro`, `colaborador`), o `id` é também chave estrangeira para a tabela mãe e **não** tem `AUTO_INCREMENT`: recebe o mesmo valor do `id` de `pessoa`. |
+| **Chaves primárias** | Sempre `id`, tipo `INT`, com `AUTO_INCREMENT`. Nas especializações (`cliente`, `engenheiro`, `colaborador`), o `id` é também chave estrangeira para a tabela mãe e **não** tem `AUTO_INCREMENT`: recebe o mesmo valor do `id` de `pessoa`. |
 | **Chaves estrangeiras** | Nome da tabela referenciada + `_id`. Ex.: `obra.cliente_id` aponta para `cliente.id`. |
 | **Tabelas associativas** | Não têm coluna `id`. A chave primária é composta pelas duas chaves estrangeiras. Ex.: (`obra_id`, `equipe_id`). |
 | **Valores em dinheiro** | `DECIMAL`, e **nunca** `FLOAT` ou `DOUBLE`. `FLOAT` guarda valores aproximados (por exemplo, 0,1 + 0,2 pode resultar em 0,30000000000000004), o que causa erros de centavos em somas. `DECIMAL` guarda o valor exato. |
 | **Datas** | `DATE` (só a data, sem hora), no formato `AAAA-MM-DD`. |
 | **CPF, CNPJ e telefone** | Gravados **só com números**, sem pontos, traços, barras ou parênteses. A formatação é feita nas telas. O telefone inclui o DDD. |
 | **UF** | Sigla do estado com 2 letras maiúsculas, por exemplo `GO`, `SP`. |
-| **Valores de domínio** | Gravados em minúsculas e sem acentos (`monofasica`, `modulo`, `pf`), e garantidos com `CHECK`. As telas exibem os nomes formatados. |
+| **Valores de domínio** | Gravados em minúsculas e sem acentos (`monofasica`, `modulo`, `ajudante`), e garantidos com `CHECK`. As telas exibem os nomes formatados. |
 
 **Legenda das colunas abaixo:** *PK* = chave primária, *FK* = chave estrangeira, *UK* = valor único. "Nulo: Não" significa que o preenchimento é obrigatório (`NOT NULL`).
 
@@ -30,7 +30,7 @@ Dados comuns a todas as pessoas do sistema: clientes, engenheiros e colaboradore
 |---|---|---|---|---|---|
 | id | INT | Não | PK | `AUTO_INCREMENT` | Identificador da pessoa. |
 | categoria | VARCHAR(12) | Não | | `CHECK` em (`cliente`, `engenheiro`, `colaborador`) | Papel da pessoa no sistema. Indica em qual tabela de especialização estão os dados específicos. |
-| nome | VARCHAR(100) | Não | | | Nome completo. Para clientes pessoa jurídica, é o nome fantasia. |
+| nome | VARCHAR(100) | Não | | | Nome completo. Para clientes que são empresas, é o nome usado no dia a dia. |
 | telefone | VARCHAR(20) | Não | | Só números, com DDD | Telefone de contato. Ex.: `62999998888`. |
 | email | VARCHAR(100) | Sim | | | E-mail de contato. Opcional. |
 | logradouro | VARCHAR(100) | Não | | | Rua, avenida etc. |
@@ -40,41 +40,16 @@ Dados comuns a todas as pessoas do sistema: clientes, engenheiros e colaboradore
 | uf | CHAR(2) | Não | | 2 letras maiúsculas | Sigla do estado. |
 
 ### cliente
-Especialização de `pessoa` para quem contrata obras. É especializada em `cliente_pf` ou `cliente_pj`.
+Especialização de `pessoa` para quem contrata obras. Pode ser pessoa física ou jurídica.
 
 | Coluna | Tipo | Nulo | Chave | Restrições | Descrição |
 |---|---|---|---|---|---|
 | id | INT | Não | PK, FK | | Identificador do cliente. É o mesmo `id` da tabela `pessoa`. |
-| tipo | CHAR(2) | Não | | `CHECK` em (`pf`, `pj`) | Indica se o cliente é pessoa física ou jurídica. Não pode ser alterado depois do cadastro (RN16). |
+| cpf_cnpj | VARCHAR(14) | Não | UK | `CHECK`: só números, com exatamente 11 ou 14 dígitos | CPF (11 dígitos) de uma pessoa física ou CNPJ (14 dígitos) de uma empresa (RN01). A quantidade de dígitos indica se o cliente é PF ou PJ. |
 
 | Chave estrangeira | Referencia | Ao excluir |
 |---|---|---|
 | id | pessoa (id) | `CASCADE` |
-
-### cliente_pf
-Especialização de `cliente` para pessoas físicas.
-
-| Coluna | Tipo | Nulo | Chave | Restrições | Descrição |
-|---|---|---|---|---|---|
-| id | INT | Não | PK, FK | | Identificador do cliente. |
-| cpf | CHAR(11) | Não | UK | Só números | CPF do cliente (RN01). |
-
-| Chave estrangeira | Referencia | Ao excluir |
-|---|---|---|
-| id | cliente (id) | `CASCADE` |
-
-### cliente_pj
-Especialização de `cliente` para pessoas jurídicas.
-
-| Coluna | Tipo | Nulo | Chave | Restrições | Descrição |
-|---|---|---|---|---|---|
-| id | INT | Não | PK, FK | | Identificador do cliente. |
-| cnpj | CHAR(14) | Não | UK | Só números | CNPJ da empresa (RN01). |
-| razao_social | VARCHAR(150) | Não | | | Nome jurídico da empresa, como consta no CNPJ. |
-
-| Chave estrangeira | Referencia | Ao excluir |
-|---|---|---|
-| id | cliente (id) | `CASCADE` |
 
 ### engenheiro
 Especialização de `pessoa` para os engenheiros responsáveis pelas obras.

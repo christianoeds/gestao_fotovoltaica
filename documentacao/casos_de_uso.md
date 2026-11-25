@@ -52,19 +52,17 @@ Os casos de uso UC03, UC04, UC07, UC08 e UC09 são cadastros simples e seguem o 
 
 **Fluxo principal (listar)**
 1. O ator acessa o menu **Clientes**.
-2. O sistema exibe a lista de clientes cadastrados, indicando se cada um é pessoa física ou jurídica, com as opções de inserir, editar e excluir.
+2. O sistema exibe a lista de clientes cadastrados, com as opções de inserir, editar e excluir.
 
 **Fluxo alternativo A1: inserir cliente**
 1. O ator clica em **Novo cliente**.
-2. O sistema pergunta se o cliente é pessoa física ou pessoa jurídica.
-3. O ator escolhe o tipo.
-4. O sistema exibe o formulário com os dados comuns (nome, telefone, e-mail e endereço) e os campos do tipo escolhido: CPF, para pessoa física, ou CNPJ e razão social, para pessoa jurídica.
-5. O ator preenche os dados e clica em **Salvar**.
-6. O sistema valida os dados, grava o cliente de uma só vez (dados de pessoa, de cliente e do tipo escolhido) e volta para a lista com uma mensagem de sucesso.
+2. O sistema exibe o formulário em branco, com os campos nome, CPF ou CNPJ, telefone, e-mail e endereço.
+3. O ator preenche os dados e clica em **Salvar**.
+4. O sistema valida os dados, grava o cliente de uma só vez (dados de pessoa e de cliente) e volta para a lista com uma mensagem de sucesso.
 
 **Fluxo alternativo A2: editar cliente**
 1. O ator clica em **Editar** em um cliente da lista.
-2. O sistema exibe o formulário preenchido com os dados atuais. O tipo do cliente (física ou jurídica) aparece, mas não pode ser alterado (RN16).
+2. O sistema exibe o formulário preenchido com os dados atuais.
 3. O ator altera os dados e clica em **Salvar**.
 4. O sistema valida os dados, grava as alterações e volta para a lista com uma mensagem de sucesso.
 
@@ -75,7 +73,7 @@ Os casos de uso UC03, UC04, UC07, UC08 e UC09 são cadastros simples e seguem o 
 4. O sistema exclui o cliente e volta para a lista com uma mensagem de sucesso.
 
 **Fluxos de exceção**
-- **E1, CPF/CNPJ já cadastrado (RN01):** em A1 ou A2, o sistema não grava e avisa que o documento já pertence a outro cliente.
+- **E1, CPF/CNPJ já cadastrado ou inválido (RN01):** em A1 ou A2, se o documento já pertencer a outro cliente ou não tiver 11 dígitos (CPF) nem 14 dígitos (CNPJ), o sistema não grava e avisa o erro.
 - **E2, campo obrigatório vazio:** em A1 ou A2, o sistema não grava e indica o campo que precisa ser preenchido.
 - **E3, cliente com obras (RN03):** em A3, o sistema não exclui e avisa que o cliente tem obras cadastradas.
 

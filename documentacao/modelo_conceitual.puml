@@ -24,15 +24,7 @@ entity PESSOA {
 }
 
 entity CLIENTE {
-}
-
-entity CLIENTE_PF {
-  cpf
-}
-
-entity CLIENTE_PJ {
-  cnpj
-  razao_social
+  cpf_cnpj
 }
 
 entity ENGENHEIRO {
@@ -124,7 +116,6 @@ relationship PASSA_POR {
 
 ' Generalização / especialização
 PESSOA =>= d { CLIENTE, ENGENHEIRO, COLABORADOR }
-CLIENTE =>= d { CLIENTE_PF, CLIENTE_PJ }
 
 ' Relacionamentos
 CLIENTE -(1,1)- CONTRATA

@@ -29,20 +29,7 @@ entity "pessoa" as pessoa {
 entity "cliente" as cliente {
   * id : INT <<PK, FK>>
   --
-  * tipo : CHAR(2)
-}
-
-entity "cliente_pf" as cliente_pf {
-  * id : INT <<PK, FK>>
-  --
-  * cpf : CHAR(11) <<UK>>
-}
-
-entity "cliente_pj" as cliente_pj {
-  * id : INT <<PK, FK>>
-  --
-  * cnpj : CHAR(14) <<UK>>
-  * razao_social : VARCHAR(150)
+  * cpf_cnpj : VARCHAR(14) <<UK>>
 }
 
 entity "engenheiro" as engenheiro {
@@ -143,8 +130,6 @@ entity "obra_etapa" as obra_etapa {
 pessoa  ||--o| cliente
 pessoa  ||--o| engenheiro
 pessoa  ||--o| colaborador
-cliente ||--o| cliente_pf
-cliente ||--o| cliente_pj
 
 ' Relacionamentos
 cliente        ||--o{ obra

@@ -21,20 +21,20 @@ Existem três estratégias comuns para levar uma especialização para tabelas:
 
 | Estratégia | Como fica | Por que não (ou por que sim) |
 |---|---|---|
-| Tabela única | Uma tabela `pessoa` com todas as colunas de todas as especializações (`cpf`, `cnpj`, `crea`, `funcao`...). | Cada linha teria várias colunas sempre vazias, e não daria para tornar `crea` obrigatório só para engenheiros. |
-| Só as especializações | Tabelas `cliente_pf`, `cliente_pj`, `engenheiro` e `colaborador`, cada uma repetindo nome, telefone e endereço. | Repete as colunas comuns, e a obra precisaria de duas chaves estrangeiras opcionais para o cliente (PF ou PJ). |
-| **Uma tabela por entidade** ✔ | `pessoa` com os dados comuns e uma tabela para cada especialização, ligadas pela chave. | **Escolhida.** Não repete colunas, não deixa colunas vazias e mantém a obra com um único `cliente_id`. |
+| Tabela única | Uma tabela `pessoa` com todas as colunas de todas as especializações (`cpf_cnpj`, `crea`, `cpf`, `funcao`, `equipe_id`). | Cada linha teria várias colunas sempre vazias, e não daria para tornar `crea` obrigatório só para engenheiros. |
+| Só as especializações | Tabelas `cliente`, `engenheiro` e `colaborador`, cada uma repetindo nome, telefone, e-mail e endereço. | Repete as colunas comuns em três tabelas. |
+| **Uma tabela por entidade** ✔ | `pessoa` com os dados comuns e uma tabela para cada especialização, ligadas pela chave. | **Escolhida.** Não repete colunas e não deixa colunas vazias. |
 
 Na estratégia escolhida:
-- a chave primária de cada especialização **é a mesma** da pessoa: o cliente com `id = 7` tem uma linha em `pessoa`, uma em `cliente` e uma em `cliente_pf` (ou `cliente_pj`), todas com `id = 7`. Nas especializações, a coluna `id` é ao mesmo tempo chave primária e chave estrangeira;
+- a chave primária de cada especialização **é a mesma** da pessoa: o cliente com `id = 7` tem uma linha em `pessoa` e uma em `cliente`, as duas com `id = 7`. Nas especializações, a coluna `id` é ao mesmo tempo chave primária e chave estrangeira;
 - por isso a relação entre a tabela mãe e cada especialização é **1:1**;
 - para montar os dados completos de um cliente, de um engenheiro ou de um colaborador, as consultas fazem um **JOIN** com `pessoa`.
 
-**Colunas discriminadoras.** As tabelas mãe têm uma coluna que diz qual especialização cada linha tem:
-- `pessoa.categoria`: `cliente`, `engenheiro` ou `colaborador`;
-- `cliente.tipo`: `pf` ou `pj`.
+**Coluna discriminadora.** A tabela `pessoa` tem a coluna `categoria` (`cliente`, `engenheiro` ou `colaborador`), que diz em qual especialização estão os dados de cada pessoa.
 
-Tecnicamente essa informação poderia ser descoberta verificando em qual tabela filha a linha existe. A coluna é uma **redundância controlada**, mantida por dois motivos: deixa as listagens e validações mais simples (por exemplo, para saber em qual tabela buscar o CPF ou o CNPJ), e ajuda a aplicação a garantir que a especialização é exclusiva.
+Tecnicamente essa informação poderia ser descoberta verificando em qual tabela filha a linha existe. A coluna é uma **redundância controlada**, mantida por dois motivos: deixa as listagens e validações mais simples, e ajuda a aplicação a garantir que a especialização é exclusiva.
+
+**PF e PJ.** O cliente não tem uma coluna de tipo. Se ele é pessoa física ou jurídica, isso é deduzido pela quantidade de dígitos de `cpf_cnpj` (11 ou 14). Guardar o tipo numa coluna separada seria redundância, com o risco de um "pf" ter um CNPJ.
 
 ## Esquema relacional
 
@@ -43,12 +43,8 @@ Notação: a chave primária está em **negrito** e as chaves estrangeiras estã
 **Herança**
 
 - pessoa (**id**, categoria, nome, telefone, email, logradouro, numero, bairro, cidade, uf)
-- cliente (***id***, tipo)
+- cliente (***id***, cpf_cnpj)
   - *id* referencia pessoa
-- cliente_pf (***id***, cpf)
-  - *id* referencia cliente
-- cliente_pj (***id***, cnpj, razao_social)
-  - *id* referencia cliente
 - engenheiro (***id***, crea)
   - *id* referencia pessoa
 - colaborador (***id***, *equipe_id*, cpf, funcao)
@@ -83,15 +79,14 @@ Notação: a chave primária está em **negrito** e as chaves estrangeiras estã
   - *obra_id* referencia obra
   - *etapa_id* referencia etapa
 
-No total são **15 tabelas**: 6 da hierarquia de pessoas, 6 das demais entidades e 3 associativas.
+No total são **13 tabelas**: 4 da hierarquia de pessoas, 6 das demais entidades e 3 associativas.
 
 ## Restrições de integridade
 
 ### Chaves únicas
 | Tabela | Coluna(s) | Motivo |
 |---|---|---|
-| cliente_pf | cpf | RN01 |
-| cliente_pj | cnpj | RN01 |
+| cliente | cpf_cnpj | RN01 |
 | colaborador | cpf | RN01 |
 | engenheiro | crea | RN02 |
 | concessionaria | sigla | Duas concessionárias não têm a mesma sigla. |
@@ -105,7 +100,7 @@ As chaves primárias compostas das tabelas associativas também funcionam como r
 | Tabela | Regra | Origem |
 |---|---|---|
 | pessoa | `categoria` deve ser `cliente`, `engenheiro` ou `colaborador` | RN16 |
-| cliente | `tipo` deve ser `pf` ou `pj` | RN16 |
+| cliente | `cpf_cnpj` deve ter exatamente 11 ou 14 dígitos, só números | RN01 |
 | colaborador | `funcao` deve ser `instalador` ou `ajudante` | RN13 |
 | obra | `tipo_ligacao` deve ser `monofasica`, `bifasica` ou `trifasica` | RN04 |
 | obra | `valor_contrato` > 0 | RN05 |
@@ -116,14 +111,14 @@ As chaves primárias compostas das tabelas associativas também funcionam como r
 | obra_etapa | `data_conclusao` ≥ `data_inicio` | RN06 |
 | obra_etapa | `data_conclusao` só pode ser preenchida se `data_inicio` também estiver | Uma etapa não termina sem ter começado. |
 
-Os valores de domínio são gravados **sem acentos e em minúsculas** (`monofasica`, `modulo`, `pf`). Isso evita erros de comparação nas consultas, como `WHERE tipo = 'modulo'` no cálculo do kWp. As telas exibem os nomes formatados.
+Os valores de domínio são gravados **sem acentos e em minúsculas** (`monofasica`, `modulo`, `ajudante`). Isso evita erros de comparação nas consultas, como `WHERE tipo = 'modulo'` no cálculo do kWp. As telas exibem os nomes formatados.
 
 ### Chaves estrangeiras
 Há duas regras de exclusão, conforme o tipo de ligação:
 
 | Ligação | Regra | Efeito |
 |---|---|---|
-| **Herança** (especialização → tabela mãe) | `ON DELETE CASCADE` | Ao excluir uma pessoa, as linhas dela em `cliente`, `cliente_pf`, `cliente_pj`, `engenheiro` ou `colaborador` são excluídas junto. A aplicação só precisa excluir de `pessoa`. |
+| **Herança** (especialização → tabela mãe) | `ON DELETE CASCADE` | Ao excluir uma pessoa, as linhas dela em `cliente`, `engenheiro` ou `colaborador` são excluídas junto. A aplicação só precisa excluir de `pessoa`. |
 | **Todas as outras** | `ON DELETE RESTRICT` | O banco recusa a exclusão de um registro que ainda é referenciado. Isso implementa a RN03 no próprio banco. |
 
 As duas regras trabalham juntas. Se a aplicação tentar excluir a pessoa de um cliente que tem obras, o `CASCADE` tenta excluir a linha de `cliente`, mas o `RESTRICT` de `obra.cliente_id` impede, e **a exclusão inteira é cancelada**. O cliente com obras continua intacto, e a aplicação mostra a mensagem de erro.
@@ -140,10 +135,10 @@ As duas regras trabalham juntas. Se a aplicação tentar excluir a pessoa de um 
 Algumas regras dependem de contar ou comparar linhas de outras tabelas, ou de comparar o valor antigo com o novo, o que não dá para fazer com `CHECK`. Elas serão validadas na camada de Modelo do PHP:
 - **RN12:** a equipe deve ter no mínimo um instalador e um ajudante;
 - **RN14:** só uma equipe completa pode ser alocada em uma obra;
-- **RN16:** cada pessoa tem exatamente uma especialização, coerente com `categoria` e `tipo`, e o tipo do cliente não muda depois do cadastro;
+- **RN16:** cada pessoa tem exatamente uma especialização, coerente com a `categoria`;
 - **RN07:** sugerir o preço do catálogo como valor unitário.
 
-Para garantir a RN16, **toda inserção de pessoa é feita numa transação**. Por exemplo, para um cliente PF: `INSERT` em `pessoa`, depois em `cliente`, depois em `cliente_pf`, e só então `COMMIT`. Se qualquer etapa falhar, um `ROLLBACK` desfaz tudo, e não sobra uma pessoa sem especialização (RNF13).
+Para garantir a RN16, **toda inserção de pessoa é feita numa transação**. Por exemplo, para um cliente: `INSERT` em `pessoa`, depois em `cliente`, e só então `COMMIT`. Se qualquer etapa falhar, um `ROLLBACK` desfaz tudo, e não sobra uma pessoa sem especialização (RNF13).
 
 ## Normalização
 
@@ -151,7 +146,7 @@ Para garantir a RN16, **toda inserção de pessoa é feita numa transação**. P
 - Os endereços da pessoa e da obra foram divididos em colunas.
 - As etapas da obra ficam em **linhas** de `obra_etapa`, e não em colunas como `data_projeto`, `data_homologacao`, `data_instalacao`.
 - As equipes da obra ficam em linhas de `obra_equipe`, e os membros da equipe em linhas de `colaborador`. Não existem colunas como `equipe1`, `equipe2` ou `ajudante1`, `ajudante2`.
-- Não existe uma coluna genérica `cpf_cnpj`, que guardaria dois tipos de dado diferentes no mesmo campo. O CPF fica em `cliente_pf` e o CNPJ em `cliente_pj`.
+- A coluna `cliente.cpf_cnpj` também é atômica: ela guarda **um único valor**, o documento de identificação do cliente, que pode ser um CPF ou um CNPJ. Não guarda os dois ao mesmo tempo, nem uma lista de documentos.
 
 ### 2ª Forma Normal: sem dependência parcial da chave
 A 2FN só pode ser violada em tabelas com chave primária composta, que aqui são as três associativas:
@@ -175,6 +170,6 @@ Nenhuma coluna não chave depende de outra coluna não chave:
 - **O mesmo equipamento aparece uma vez por obra.** Como a chave de `obra_equipamento` é (obra, equipamento), se a obra usa 20 módulos do mesmo modelo, isso é **uma linha com quantidade 20**, e não 20 linhas.
 - **COMPOE aparece como "um para um ou muitos"** no diagrama (`||--|{`). A notação pé de galinha não consegue mostrar o mínimo de 2 colaboradores do modelo conceitual. Essa regra é garantida pela aplicação (RN12).
 - **Padrão de nomes das chaves.** Toda chave primária se chama `id`, e toda chave estrangeira se chama `nometabela_id`, indicando a tabela para onde aponta: `obra.cliente_id` aponta para `cliente.id`, e `colaborador.equipe_id` aponta para `equipe.id`. Há duas situações especiais:
-  - nas **especializações** (`cliente`, `cliente_pf`, `cliente_pj`, `engenheiro`, `colaborador`), a chave primária também é chave estrangeira para a tabela mãe. Ela segue a regra da chave primária e se chama `id`;
+  - nas **especializações** (`cliente`, `engenheiro`, `colaborador`), a chave primária também é chave estrangeira para a tabela mãe. Ela segue a regra da chave primária e se chama `id`;
   - nas **tabelas associativas**, não existe coluna `id`: a chave primária é composta pelas duas chaves estrangeiras, que seguem a regra `nometabela_id` (por exemplo, `obra_id` e `equipe_id`).
-- **Povoamento.** Com a herança, `pessoa` recebe uma linha para cada cliente, engenheiro e colaborador. Para cumprir o mínimo de 10 registros por tabela, são necessários pelo menos 10 clientes PF, 10 clientes PJ, 10 engenheiros e 20 colaboradores (10 equipes com um instalador e um ajudante), ou seja, **50 pessoas ou mais**.
+- **Povoamento.** Com a herança, `pessoa` recebe uma linha para cada cliente, engenheiro e colaborador. Para cumprir o mínimo de 10 registros por tabela, são necessários pelo menos 10 clientes, 10 engenheiros e 20 colaboradores (10 equipes com um instalador e um ajudante), ou seja, **40 pessoas ou mais**. Vale misturar clientes com CPF e com CNPJ.

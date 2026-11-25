@@ -27,7 +27,7 @@ A ideia é ter um sistema simples, que rode no navegador, para centralizar esses
 
 **Pessoas:** clientes, engenheiros e colaboradores têm dados em comum: nome, telefone, e-mail e endereço (rua, número, bairro, cidade e UF). Cada pessoa cadastrada tem um único papel no sistema: é cliente, engenheiro ou colaborador.
 
-**Clientes:** quem contrata a obra. Pode ser **pessoa física**, de quem guardamos o CPF, ou **pessoa jurídica**, de quem guardamos o CNPJ e a razão social. Para empresas, o nome usado no dia a dia (o nome fantasia) fica como nome da pessoa. O tipo do cliente (física ou jurídica) não muda depois do cadastro. Um cliente pode ter várias obras, por exemplo uma na casa e outra no comércio.
+**Clientes:** quem contrata a obra. Pode ser pessoa física ou jurídica. Além dos dados comuns de pessoa, guardamos um único documento: o **CPF**, se for pessoa física, ou o **CNPJ**, se for empresa. Para empresas, o nome guardado é o nome usado no dia a dia. Um cliente pode ter várias obras, por exemplo uma na casa e outra no comércio.
 
 **Concessionárias:** as distribuidoras de energia que aprovam a conexão do sistema à rede. Guardamos o nome, a sigla e o estado onde atuam.
 

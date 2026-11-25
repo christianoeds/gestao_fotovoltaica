@@ -22,25 +22,20 @@ Clientes, engenheiros e colaboradores têm dados em comum: nome, telefone, e-mai
                       │  total, exclusiva
          ┌────────────┼──────────────┐
       CLIENTE     ENGENHEIRO     COLABORADOR
-         │          (crea)       (cpf, funcao)
-         │  total, exclusiva
-     ┌───┴───┐
-CLIENTE_PF  CLIENTE_PJ
-  (cpf)    (cnpj, razao_social)
+    (cpf_cnpj)      (crea)       (cpf, funcao)
 ```
 
 | Especialização | Total ou parcial | Exclusiva ou sobreposta |
 |---|---|---|
 | PESSOA → CLIENTE, ENGENHEIRO, COLABORADOR | **Total**: toda pessoa cadastrada tem um papel. Não existe "pessoa" solta no sistema. | **Exclusiva**: cada pessoa cadastrada tem um único papel. |
-| CLIENTE → CLIENTE_PF, CLIENTE_PJ | **Total**: todo cliente é pessoa física ou jurídica. | **Exclusiva**: um cliente não pode ser PF e PJ ao mesmo tempo. |
 
 No diagrama, a **linha dupla** indica especialização total e a letra **"d"** (de *disjoint*) indica especialização exclusiva.
 
-**Por que existe CLIENTE entre PESSOA e PF/PJ.** A obra precisa se relacionar com "o cliente", seja ele PF ou PJ. Se CLIENTE_PF e CLIENTE_PJ herdassem direto de PESSOA, a obra precisaria de dois relacionamentos opcionais (um com PF e outro com PJ), e sempre um deles ficaria vazio. Com o nível intermediário, a obra tem um único relacionamento, CONTRATA, com CLIENTE.
+**Por que a especialização é exclusiva.** Na prática, um colaborador pode um dia contratar uma obra. Se a especialização fosse sobreposta, essa pessoa teria o CPF guardado duas vezes (em COLABORADOR e em CLIENTE), o que é redundância. Como esse caso é raro, optou-se pela especialização exclusiva: se acontecer, a pessoa é cadastrada uma vez como colaborador e outra vez como cliente.
 
-**Por que a primeira especialização é exclusiva.** Na prática, um colaborador pode um dia contratar uma obra. Se a especialização fosse sobreposta, essa pessoa teria o CPF guardado duas vezes (em COLABORADOR e em CLIENTE_PF), o que é redundância. Como esse caso é raro, optou-se pela especialização exclusiva: se acontecer, a pessoa é cadastrada uma vez como colaborador e outra vez como cliente.
+**Onde fica o documento.** O documento não está em PESSOA porque os engenheiros são identificados pelo CREA. O cliente tem um único atributo, **cpf_cnpj**, que guarda o CPF de uma pessoa física ou o CNPJ de uma empresa. O tipo de cliente não precisa ser guardado: ele é deduzido pela quantidade de dígitos (11 para CPF, 14 para CNPJ). O colaborador, que é sempre pessoa física, tem o atributo **cpf**.
 
-**Onde fica o CPF.** O CPF não está em PESSOA porque clientes pessoa jurídica não têm CPF e engenheiros são identificados pelo CREA. Ele aparece só nas especializações que precisam dele: CLIENTE_PF e COLABORADOR.
+**Por que PF e PJ não são especializações.** Seria possível especializar CLIENTE em CLIENTE_PF e CLIENTE_PJ. Mas a única diferença entre eles seria o documento, e a especialização acrescentaria duas tabelas e um nível a mais de herança sem ganho real. Por isso foi mantido um único tipo de cliente.
 
 ## Entidades
 
@@ -48,10 +43,8 @@ O atributo identificador de cada entidade está em **negrito**. As especializaç
 
 | Entidade | Atributos | Descrição |
 |---|---|---|
-| **PESSOA** | **id**, nome, telefone, email, endereco *(composto)* | Dados comuns a todas as pessoas do sistema. Para clientes PJ, o nome é o nome fantasia. |
-| **CLIENTE** | *(herda de PESSOA)* | Pessoa que contrata obras. |
-| **CLIENTE_PF** | cpf | Cliente pessoa física. |
-| **CLIENTE_PJ** | cnpj, razao_social | Cliente pessoa jurídica. |
+| **PESSOA** | **id**, nome, telefone, email, endereco *(composto)* | Dados comuns a todas as pessoas do sistema. |
+| **CLIENTE** | cpf_cnpj | Pessoa física ou jurídica que contrata obras. |
 | **ENGENHEIRO** | crea | Responsável técnico pelas obras. |
 | **COLABORADOR** | cpf, funcao | Membro de uma equipe, com a função de instalador ou ajudante. |
 | **CONCESSIONARIA** | **id**, nome, sigla, uf | Distribuidora de energia que aprova a conexão da usina à rede. |
@@ -106,4 +99,3 @@ Os atributos comuns ficam num só lugar, e cada especialização guarda apenas o
 ## Restrições que o diagrama não consegue representar
 
 - A cardinalidade **(2,N)** em COMPOE garante que a equipe tenha no mínimo dois colaboradores, mas não garante que **um deles seja instalador e o outro ajudante** (RN12). Essa regra depende do valor do atributo `funcao`. Por isso ela será validada na camada de Modelo da aplicação, e não pela estrutura do banco.
-- O tipo do cliente (PF ou PJ) **não pode mudar** depois do cadastro (RN16). Essa é uma regra sobre alterações, e não sobre a estrutura dos dados, por isso também fica na aplicação.

@@ -18,7 +18,7 @@ Em todos os cadastros abaixo, "manter" significa **inserir, listar, editar e exc
 
 | Código | Requisito | Ator |
 |---|---|---|
-| RF01 | O sistema deve permitir manter **clientes**, que podem ser pessoa física (CPF) ou pessoa jurídica (CNPJ e razão social), com nome, telefone, e-mail e endereço. | Comercial |
+| RF01 | O sistema deve permitir manter **clientes** (nome, CPF ou CNPJ, telefone, e-mail e endereço). | Comercial |
 | RF02 | O sistema deve permitir manter **concessionárias** (nome, sigla e estado). | Diretoria |
 | RF03 | O sistema deve permitir manter **engenheiros** (nome, CREA, telefone, e-mail e endereço). | Diretoria |
 | RF04 | O sistema deve permitir manter **equipes de instalação** (nome da equipe). | Diretoria |
@@ -60,7 +60,7 @@ Cada relatório corresponde a uma das consultas SQL exigidas no trabalho.
 
 | Código | Regra |
 |---|---|
-| RN01 | Não pode haver dois clientes pessoa física com o mesmo CPF, dois clientes pessoa jurídica com o mesmo CNPJ, nem dois colaboradores com o mesmo CPF. |
+| RN01 | Não pode haver dois clientes com o mesmo CPF ou CNPJ, nem dois colaboradores com o mesmo CPF. O documento do cliente deve ter 11 dígitos (CPF) ou 14 dígitos (CNPJ). |
 | RN02 | Não pode haver dois engenheiros com o mesmo número de CREA. |
 | RN03 | Um registro que está sendo usado não pode ser excluído. Por exemplo, um cliente com obras, um engenheiro responsável por alguma obra, uma equipe com obras ou um equipamento já usado em alguma obra. |
 | RN04 | O tipo de ligação da obra deve ser monofásica, bifásica ou trifásica. |
@@ -75,7 +75,7 @@ Cada relatório corresponde a uma das consultas SQL exigidas no trabalho.
 | RN13 | Cada colaborador pertence a uma única equipe, e sua função deve ser "instalador" ou "ajudante". |
 | RN14 | Uma equipe só pode ser alocada em uma obra se estiver completa, ou seja, com pelo menos um instalador e pelo menos um ajudante. |
 | RN15 | Uma obra pode ter várias equipes alocadas, mas a mesma equipe não pode ser alocada duas vezes na mesma obra. |
-| RN16 | Toda pessoa cadastrada tem exatamente um papel: cliente, engenheiro ou colaborador. Todo cliente é exatamente pessoa física ou pessoa jurídica, e esse tipo não pode ser alterado depois do cadastro. |
+| RN16 | Toda pessoa cadastrada tem exatamente um papel: cliente, engenheiro ou colaborador. |
 
 ## Requisitos não funcionais
 
@@ -93,7 +93,7 @@ Cada relatório corresponde a uma das consultas SQL exigidas no trabalho.
 | RNF10 | Dados | O banco deve ser entregue povoado, com no mínimo 10 registros em cada tabela. |
 | RNF11 | Usabilidade | A interface deve ser em português, com um menu que dê acesso a todos os cadastros e relatórios. |
 | RNF12 | Usabilidade | O sistema deve mostrar mensagens claras de sucesso e de erro após cada operação, inclusive quando uma exclusão for bloqueada pela RN03. |
-| RNF13 | Dados | As operações que gravam em mais de uma tabela ao mesmo tempo (como o cadastro de um cliente, que grava em `pessoa`, `cliente` e `cliente_pf` ou `cliente_pj`) devem usar transação, para que nada fique gravado pela metade em caso de erro. |
+| RNF13 | Dados | As operações que gravam em mais de uma tabela ao mesmo tempo (como o cadastro de um cliente, que grava em `pessoa` e em `cliente`) devem usar transação, para que nada fique gravado pela metade em caso de erro. |
 
 ## Fora do escopo
 
