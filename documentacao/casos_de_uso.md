@@ -11,7 +11,7 @@ Nos casos de uso do tipo **"Manter"**, o ator pode **listar, inserir, editar e e
 | Ator | Descrição |
 |---|---|
 | **Comercial** | Cadastra clientes e obras. |
-| **Engenheiro** | Acompanha o andamento das etapas e registra os equipamentos das obras. |
+| **Engenheiro** | Registra o andamento das obras e os equipamentos usados. |
 | **Diretoria** | Mantém os cadastros de apoio e consulta os relatórios. |
 
 ## Lista de casos de uso
@@ -19,25 +19,22 @@ Nos casos de uso do tipo **"Manter"**, o ator pode **listar, inserir, editar e e
 | Código | Caso de uso | Ator | Requisitos |
 |---|---|---|---|
 | UC01 | Manter clientes | Comercial | RF01 |
-| UC02 | Manter obras | Comercial | RF09 |
-| UC03 | Manter concessionárias | Diretoria | RF02 |
-| UC04 | Manter engenheiros | Diretoria | RF03 |
-| UC05 | Manter equipes de instalação | Diretoria | RF04 |
-| UC06 | Manter colaboradores | Diretoria | RF05 |
-| UC07 | Manter fabricantes | Diretoria | RF06 |
-| UC08 | Manter equipamentos | Diretoria | RF07 |
-| UC09 | Manter etapas | Diretoria | RF08 |
-| UC10 | Registrar andamento das etapas | Engenheiro | RF10 |
-| UC11 | Registrar equipamentos da obra | Engenheiro | RF11 |
-| UC12 | Consultar detalhes da obra | Comercial, Engenheiro, Diretoria | RF13 |
-| UC13 | Emitir relatórios | Diretoria | RF14 a RF25 |
-| UC14 | Alocar equipes na obra | Engenheiro | RF12 |
+| UC02 | Manter obras | Comercial | RF07 |
+| UC03 | Manter engenheiros | Diretoria | RF02 |
+| UC04 | Manter cidades | Diretoria | RF03 |
+| UC05 | Manter concessionárias | Diretoria | RF04 |
+| UC06 | Manter fabricantes | Diretoria | RF05 |
+| UC07 | Manter equipamentos | Diretoria | RF06 |
+| UC08 | Registrar andamento da obra | Engenheiro | RF08 |
+| UC09 | Registrar equipamentos da obra | Engenheiro | RF09 |
+| UC10 | Consultar detalhes da obra | Comercial, Engenheiro, Diretoria | RF10 |
+| UC11 | Emitir relatórios | Diretoria | RF11 a RF22 |
 
-Os casos de uso UC10, UC11 e UC14 partem da tela de detalhes da obra (UC12). No diagrama, eles aparecem como extensões (`<<extend>>`) do UC12.
+Os casos de uso UC08 e UC09 partem da tela de detalhes da obra (UC10). No diagrama, eles aparecem como extensões (`<<extend>>`) do UC10.
 
 ## Descrição dos principais casos de uso
 
-Os casos de uso UC03, UC04, UC07, UC08 e UC09 são cadastros simples e seguem o mesmo fluxo do UC01. Por isso, abaixo estão descritos apenas o UC01, que serve de modelo para os demais, e os casos de uso com regras mais importantes.
+Os casos de uso UC04, UC05, UC06 e UC07 são cadastros simples e seguem o mesmo fluxo do UC01. O UC03 (engenheiros) também é igual ao UC01, trocando o CPF/CNPJ pelo CREA. Por isso, abaixo estão descritos apenas o UC01, que serve de modelo para os demais, e os casos de uso com regras mais importantes.
 
 ---
 
@@ -46,19 +43,19 @@ Os casos de uso UC03, UC04, UC07, UC08 e UC09 são cadastros simples e seguem o 
 | | |
 |---|---|
 | **Ator** | Comercial |
-| **Requisitos** | RF01, RN01, RN03, RN16 |
-| **Pré-condição** | Nenhuma. |
+| **Requisitos** | RF01, RN01, RN03, RN12 |
+| **Pré-condição** | Deve existir pelo menos uma cidade cadastrada. |
 | **Pós-condição** | O cadastro de clientes fica atualizado. |
 
 **Fluxo principal (listar)**
 1. O ator acessa o menu **Clientes**.
-2. O sistema exibe a lista de clientes cadastrados, com as opções de inserir, editar e excluir.
+2. O sistema exibe a lista de clientes cadastrados, com a cidade de cada um e as opções de inserir, editar e excluir.
 
 **Fluxo alternativo A1: inserir cliente**
 1. O ator clica em **Novo cliente**.
-2. O sistema exibe o formulário em branco, com os campos nome, CPF ou CNPJ, telefone, e-mail e endereço.
+2. O sistema exibe o formulário em branco, com os campos nome, CPF ou CNPJ, telefone, e-mail, endereço e uma lista de seleção de cidades.
 3. O ator preenche os dados e clica em **Salvar**.
-4. O sistema valida os dados, grava o cliente de uma só vez (dados de pessoa e de cliente) e volta para a lista com uma mensagem de sucesso.
+4. O sistema valida os dados, grava o cliente de uma só vez (dados de pessoa e de cliente, numa transação) e volta para a lista com uma mensagem de sucesso.
 
 **Fluxo alternativo A2: editar cliente**
 1. O ator clica em **Editar** em um cliente da lista.
@@ -70,7 +67,7 @@ Os casos de uso UC03, UC04, UC07, UC08 e UC09 são cadastros simples e seguem o 
 1. O ator clica em **Excluir** em um cliente da lista.
 2. O sistema pede uma confirmação.
 3. O ator confirma.
-4. O sistema exclui o cliente e volta para a lista com uma mensagem de sucesso.
+4. O sistema exclui o cliente (e os dados de pessoa dele) e volta para a lista com uma mensagem de sucesso.
 
 **Fluxos de exceção**
 - **E1, CPF/CNPJ já cadastrado ou inválido (RN01):** em A1 ou A2, se o documento já pertencer a outro cliente ou não tiver 11 dígitos (CPF) nem 14 dígitos (CNPJ), o sistema não grava e avisa o erro.
@@ -84,94 +81,66 @@ Os casos de uso UC03, UC04, UC07, UC08 e UC09 são cadastros simples e seguem o 
 | | |
 |---|---|
 | **Ator** | Comercial |
-| **Requisitos** | RF09, RN03, RN04, RN05 |
-| **Pré-condição** | Devem existir clientes, engenheiros e concessionárias cadastrados. |
-| **Pós-condição** | A obra fica cadastrada e pode ter suas etapas, equipes e equipamentos registrados. |
+| **Requisitos** | RF07, RN03, RN04, RN05, RN06 |
+| **Pré-condição** | Devem existir clientes, engenheiros, concessionárias e cidades cadastrados. |
+| **Pós-condição** | A obra fica cadastrada e pode ter seu andamento e seus equipamentos registrados. |
 
 **Fluxo principal (listar)**
 1. O ator acessa o menu **Obras**.
-2. O sistema exibe a lista de obras com o cliente, o engenheiro, a concessionária e a data do contrato.
+2. O sistema exibe a lista de obras com o cliente, o engenheiro, a concessionária, a cidade e a data do contrato.
 
 **Fluxo alternativo A1: inserir obra**
 1. O ator clica em **Nova obra**.
-2. O sistema exibe o formulário, com listas de seleção para cliente, engenheiro, concessionária e tipo de ligação.
-3. O ator preenche os dados e clica em **Salvar**.
+2. O sistema exibe o formulário, com listas de seleção para cliente, engenheiro, concessionária, cidade e tipo de ligação.
+3. O ator preenche os dados, incluindo a data prevista de conclusão, e clica em **Salvar**.
 4. O sistema valida os dados, grava a obra e volta para a lista com uma mensagem de sucesso.
 
 **Fluxo alternativo A2: editar obra**
 Igual ao A2 do UC01, usando o formulário de obra.
 
 **Fluxo alternativo A3: excluir obra**
-Igual ao A3 do UC01.
+1. O ator clica em **Excluir** em uma obra da lista.
+2. O sistema pede uma confirmação, avisando que os equipamentos registrados na obra também serão excluídos (RN03).
+3. O ator confirma.
+4. O sistema exclui a obra e os equipamentos dela e volta para a lista com uma mensagem de sucesso.
 
 **Fluxos de exceção**
 - **E1, valor do contrato inválido (RN05):** em A1 ou A2, se o valor for zero ou negativo, o sistema não grava e avisa o erro.
-- **E2, obra com etapas, equipes ou equipamentos registrados (RN03):** em A3, o sistema não exclui e avisa que a obra já tem registros ligados a ela.
+- **E2, data prevista inválida (RN06):** em A1 ou A2, se a data prevista for anterior à data do contrato, o sistema não grava e avisa o erro.
 
 ---
 
-### UC06: Manter colaboradores
-
-| | |
-|---|---|
-| **Ator** | Diretoria |
-| **Requisitos** | RF05, RN01, RN12, RN13, RN16 |
-| **Pré-condição** | Deve existir pelo menos uma equipe de instalação cadastrada. |
-| **Pós-condição** | O cadastro de colaboradores fica atualizado e todas as equipes com obras continuam completas. |
-
-**Fluxo principal (listar)**
-1. O ator acessa o menu **Colaboradores**.
-2. O sistema exibe a lista de colaboradores com a função e a equipe de cada um.
-
-**Fluxo alternativo A1: inserir colaborador**
-1. O ator clica em **Novo colaborador**.
-2. O sistema exibe o formulário, com a lista de equipes e as opções de função "instalador" e "ajudante".
-3. O ator preenche os dados e clica em **Salvar**.
-4. O sistema valida os dados, grava o colaborador e volta para a lista com uma mensagem de sucesso.
-
-**Fluxo alternativo A2: editar colaborador**
-Igual ao A2 do UC01, usando o formulário de colaborador.
-
-**Fluxo alternativo A3: excluir colaborador**
-Igual ao A3 do UC01.
-
-**Fluxos de exceção**
-- **E1, CPF já cadastrado (RN01):** em A1 ou A2, o sistema não grava e avisa que o CPF já pertence a outro colaborador.
-- **E2, equipe ficaria incompleta (RN12):** em A2 ou A3, se o colaborador for o único instalador ou o único ajudante de uma equipe que tem obras, o sistema não permite trocar a equipe, alterar a função ou excluir. O sistema avisa que a equipe ficaria incompleta.
-
----
-
-### UC10: Registrar andamento das etapas
+### UC08: Registrar andamento da obra
 
 | | |
 |---|---|
 | **Ator** | Engenheiro |
-| **Requisitos** | RF10, RN06, RN09, RN11 |
-| **Pré-condição** | A obra deve estar cadastrada e as etapas padrão devem existir. |
-| **Pós-condição** | As datas das etapas da obra ficam atualizadas. |
+| **Requisitos** | RF08, RN06, RN09, RN11 |
+| **Pré-condição** | A obra deve estar cadastrada. |
+| **Pós-condição** | As datas de homologação e de conclusão da obra ficam atualizadas. |
 
 **Fluxo principal**
-1. O ator abre os detalhes de uma obra (UC12) e clica em **Etapas**.
-2. O sistema exibe todas as etapas padrão, na ordem, com a data prevista, a data de início e a data de conclusão de cada uma. As etapas atrasadas aparecem destacadas (RN11).
-3. O ator preenche ou altera as datas de uma etapa e clica em **Salvar**.
-4. O sistema valida as datas, grava o andamento e exibe uma mensagem de sucesso.
+1. O ator abre os detalhes de uma obra (UC10) e clica em **Andamento**.
+2. O sistema exibe a data do contrato, a data prevista e os campos de data de protocolo, data de aprovação e data de conclusão. Se a obra estiver atrasada, o sistema mostra um aviso (RN11).
+3. O ator preenche as datas que já aconteceram e clica em **Salvar**.
+4. O sistema valida as datas, grava o andamento e exibe uma mensagem de sucesso. Se a homologação já foi aprovada, o sistema mostra quantos dias ela levou (RN09).
 
 **Fluxos de exceção**
-- **E1, datas inconsistentes (RN06):** no passo 4, se a data de conclusão for anterior à data de início, o sistema não grava e avisa o erro.
+- **E1, datas inconsistentes (RN06):** no passo 4, se a data de aprovação for informada sem a data de protocolo, se for anterior a ela, ou se alguma data for anterior à data do contrato, o sistema não grava e avisa o erro.
 
 ---
 
-### UC11: Registrar equipamentos da obra
+### UC09: Registrar equipamentos da obra
 
 | | |
 |---|---|
 | **Ator** | Engenheiro |
-| **Requisitos** | RF11, RN05, RN07 |
+| **Requisitos** | RF09, RN05, RN07 |
 | **Pré-condição** | A obra e os equipamentos devem estar cadastrados. |
 | **Pós-condição** | Os equipamentos da obra ficam registrados e a potência da obra (kWp) é recalculada. |
 
 **Fluxo principal**
-1. O ator abre os detalhes de uma obra (UC12) e clica em **Equipamentos**.
+1. O ator abre os detalhes de uma obra (UC10) e clica em **Equipamentos**.
 2. O sistema exibe os equipamentos já registrados na obra e um formulário para adicionar um novo.
 3. O ator seleciona um equipamento.
 4. O sistema preenche o valor unitário com o preço atual do catálogo (RN07).
@@ -186,58 +155,32 @@ Igual ao A3 do UC01.
 
 **Fluxos de exceção**
 - **E1, quantidade ou valor inválido (RN05):** no passo 6, se a quantidade ou o valor unitário for zero ou negativo, o sistema não grava e avisa o erro.
+- **E2, equipamento já registrado:** no passo 6, se o equipamento já estiver na obra, o sistema não grava e sugere editar a quantidade do registro existente.
 
 ---
 
-### UC14: Alocar equipes na obra
-
-| | |
-|---|---|
-| **Ator** | Engenheiro |
-| **Requisitos** | RF12, RN14, RN15 |
-| **Pré-condição** | A obra deve estar cadastrada e deve existir pelo menos uma equipe completa. |
-| **Pós-condição** | A obra fica com as equipes de instalação que vão executá-la. |
-
-**Fluxo principal**
-1. O ator abre os detalhes de uma obra (UC12) e clica em **Equipes**.
-2. O sistema exibe as equipes já alocadas na obra, com seus membros, e uma lista das equipes que podem ser adicionadas.
-3. O ator seleciona uma equipe e clica em **Alocar**.
-4. O sistema valida a equipe, grava a alocação, atualiza a lista e exibe uma mensagem de sucesso.
-
-**Fluxo alternativo A1: remover equipe da obra**
-1. O ator clica em **Remover** em uma equipe alocada.
-2. O sistema pede uma confirmação.
-3. O ator confirma.
-4. O sistema remove a equipe da obra e atualiza a lista.
-
-**Fluxos de exceção**
-- **E1, equipe incompleta (RN14):** no passo 4, se a equipe não tiver pelo menos um instalador e um ajudante, o sistema não grava e avisa que a equipe está incompleta.
-- **E2, equipe já alocada (RN15):** no passo 4, se a equipe já estiver alocada nessa obra, o sistema não grava e avisa que ela já faz parte da obra.
-
----
-
-### UC12: Consultar detalhes da obra
+### UC10: Consultar detalhes da obra
 
 | | |
 |---|---|
 | **Ator** | Comercial, Engenheiro, Diretoria |
-| **Requisitos** | RF13, RN08 |
+| **Requisitos** | RF10, RN08 |
 | **Pré-condição** | A obra deve estar cadastrada. |
 | **Pós-condição** | Nenhuma (apenas consulta). |
 
 **Fluxo principal**
 1. O ator clica em uma obra na lista de obras.
-2. O sistema exibe os dados da obra, o cliente, o engenheiro, as equipes alocadas com seus membros, a concessionária e a **potência total da usina em kWp**, calculada a partir dos módulos registrados (RN08).
-3. O sistema exibe os atalhos para **Etapas** (UC10), **Equipamentos** (UC11) e **Equipes** (UC14).
+2. O sistema exibe os dados da obra, o cliente, o engenheiro, a concessionária, as datas do andamento e a **potência total da usina em kWp**, calculada a partir dos módulos registrados (RN08).
+3. O sistema exibe os atalhos para **Andamento** (UC08) e **Equipamentos** (UC09).
 
 ---
 
-### UC13: Emitir relatórios
+### UC11: Emitir relatórios
 
 | | |
 |---|---|
 | **Ator** | Diretoria |
-| **Requisitos** | RF14 a RF25 |
+| **Requisitos** | RF11 a RF22 |
 | **Pré-condição** | O banco de dados deve ter dados cadastrados. |
 | **Pós-condição** | Nenhuma (apenas consulta). |
 
@@ -248,7 +191,7 @@ Igual ao A3 do UC01.
 4. O sistema executa a consulta e exibe o resultado em uma tabela.
 
 **Fluxo alternativo A1: relatório com parâmetro**
-1. No passo 3, se o relatório precisar de um valor informado pelo ator (a quantidade mínima de obras no RF19 ou o número de meses no RF22), o sistema exibe um campo para esse valor.
+1. No passo 3, se o relatório precisar de um valor informado pelo ator (a quantidade mínima de obras no RF16 ou o número de meses no RF19), o sistema exibe um campo para esse valor.
 2. O ator informa o valor e clica em **Gerar**.
 3. O sistema executa a consulta com o valor informado e exibe o resultado.
 

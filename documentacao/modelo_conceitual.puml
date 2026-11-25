@@ -9,6 +9,12 @@
 '
 ' Especialização: linha dupla (=>=) = total; "d" = exclusiva (disjunta).
 
+entity CIDADE {
+  id <<key>>
+  nome
+  uf
+}
+
 entity PESSOA {
   id <<key>>
   nome
@@ -18,22 +24,15 @@ entity PESSOA {
     logradouro
     numero
     bairro
-    cidade
-    uf
   }
 }
 
 entity CLIENTE {
-  cpf_cnpj
+  cpfCnpj
 }
 
 entity ENGENHEIRO {
   crea
-}
-
-entity COLABORADOR {
-  cpf
-  funcao
 }
 
 entity CONCESSIONARIA {
@@ -43,46 +42,43 @@ entity CONCESSIONARIA {
   uf
 }
 
-entity EQUIPE {
-  id <<key>>
-  nome
-}
-
 entity FABRICANTE {
   id <<key>>
   nome
-  pais_origem
+  paisOrigem
 }
 
 entity EQUIPAMENTO {
   id <<key>>
   tipo
   modelo
-  potencia_w
-  preco_atual
-  garantia_anos
-}
-
-entity ETAPA {
-  id <<key>>
-  nome
-  ordem
+  potenciaW
+  precoAtual
+  garantiaAnos
 }
 
 entity OBRA {
   id <<key>>
-  numero_uc
-  endereco_instalacao {
+  numeroUc
+  enderecoInstalacao {
     logradouro
     numero
     bairro
-    cidade
-    uf
   }
-  tipo_ligacao
-  data_contrato
-  valor_contrato
-  potencia_kwp <<derived>>
+  tipoLigacao
+  dataContrato
+  valorContrato
+  dataProtocolo
+  dataAprovacao
+  dataPrevista
+  dataConclusao
+  potenciaKwp <<derived>>
+}
+
+relationship MORA_EM {
+}
+
+relationship FICA_EM {
 }
 
 relationship CONTRATA {
@@ -91,13 +87,7 @@ relationship CONTRATA {
 relationship RESPONSAVEL_POR {
 }
 
-relationship EXECUTA {
-}
-
 relationship CONECTA {
-}
-
-relationship COMPOE {
 }
 
 relationship FABRICA {
@@ -105,41 +95,32 @@ relationship FABRICA {
 
 relationship UTILIZA {
   quantidade
-  valor_unitario
-}
-
-relationship PASSA_POR {
-  data_prevista
-  data_inicio
-  data_conclusao
+  valorUnitario
 }
 
 ' Generalização / especialização
-PESSOA =>= d { CLIENTE, ENGENHEIRO, COLABORADOR }
+PESSOA =>= d { CLIENTE, ENGENHEIRO }
 
 ' Relacionamentos
+CIDADE -(1,1)- MORA_EM
+MORA_EM -(0,N)- PESSOA
+
+CIDADE -(1,1)- FICA_EM
+FICA_EM -(0,N)- OBRA
+
 CLIENTE -(1,1)- CONTRATA
 CONTRATA -(0,N)- OBRA
 
 ENGENHEIRO -(1,1)- RESPONSAVEL_POR
 RESPONSAVEL_POR -(0,N)- OBRA
 
-EQUIPE -(0,N)- EXECUTA
-EXECUTA -(0,N)- OBRA
-
 CONCESSIONARIA -(1,1)- CONECTA
 CONECTA -(0,N)- OBRA
-
-EQUIPE -(1,1)- COMPOE
-COMPOE -(2,N)- COLABORADOR
 
 FABRICANTE -(1,1)- FABRICA
 FABRICA -(0,N)- EQUIPAMENTO
 
 OBRA -(0,N)- UTILIZA
 UTILIZA -(0,N)- EQUIPAMENTO
-
-OBRA -(0,N)- PASSA_POR
-PASSA_POR -(0,N)- ETAPA
 
 @endchen

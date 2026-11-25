@@ -2,15 +2,15 @@
 
 ## Sobre a empresa
 
-A **Derivar** é uma empresa integradora de energia solar. Ela vende, projeta e instala sistemas fotovoltaicos conectados à rede, principalmente em casas, comércios e pequenas indústrias. A equipe tem alguns engenheiros eletricistas, que assinam os projetos e acompanham as obras, e equipes de instalação que vão a campo montar os sistemas.
+A **Derivar** é uma empresa integradora de energia solar. Ela vende, projeta e instala sistemas fotovoltaicos conectados à rede, principalmente em casas, comércios e pequenas indústrias. Os engenheiros eletricistas da empresa assinam os projetos e acompanham as obras.
 
-Cada venda vira uma **obra**, que passa por várias etapas até o sistema começar a gerar energia: vistoria técnica no local, elaboração do projeto, pedido de homologação na concessionária, instalação, vistoria da concessionária e, por fim, a troca do medidor e a ligação do sistema.
+Cada venda vira uma **obra**. Depois da assinatura do contrato, o engenheiro faz o projeto e pede a **homologação** na concessionária de energia, que precisa aprovar a conexão da usina à rede. Em paralelo, a obra é **instalada**. Quando a instalação termina, começa a contar a garantia dos equipamentos.
 
 ## Qual é o problema?
 
 Hoje o acompanhamento das obras é feito em planilhas e grupos de WhatsApp. Isso causa vários problemas:
 
-- ninguém sabe com certeza em que etapa cada obra está, nem quais estão atrasadas;
+- ninguém sabe com certeza quais obras estão atrasadas;
 - a homologação depende da concessionária e às vezes demora muito, mas a empresa não tem números para saber qual concessionária costuma atrasar mais;
 - não existe um registro organizado de quais equipamentos foram instalados em cada cliente, então fica difícil saber quando a garantia de um inversor está acabando;
 - no fim do mês, a diretoria precisa montar na mão quanto foi vendido e quantos kWp foram instalados.
@@ -20,28 +20,29 @@ A ideia é ter um sistema simples, que rode no navegador, para centralizar esses
 ## Quem vai usar o sistema
 
 - **Comercial / administrativo:** cadastra clientes e obras e registra o valor do contrato.
-- **Engenheiro:** acompanha as etapas das obras pelas quais é responsável e registra os equipamentos usados.
-- **Diretoria (administrador):** cadastra engenheiros, equipes de instalação, equipamentos e concessionárias, e acompanha os relatórios.
+- **Engenheiro:** registra o andamento das obras pelas quais é responsável (homologação e conclusão) e os equipamentos usados.
+- **Diretoria (administrador):** cadastra engenheiros, cidades, concessionárias, fabricantes e equipamentos, e acompanha os relatórios.
 
 ## O que a empresa precisa guardar
 
-**Pessoas:** clientes, engenheiros e colaboradores têm dados em comum: nome, telefone, e-mail e endereço (rua, número, bairro, cidade e UF). Cada pessoa cadastrada tem um único papel no sistema: é cliente, engenheiro ou colaborador.
+**Cidades:** as cidades onde moram os clientes e engenheiros e onde ficam as obras, com o nome e o estado (UF).
+
+**Pessoas:** clientes e engenheiros têm dados em comum: nome, telefone, e-mail e endereço (rua, número, bairro e cidade). Cada pessoa cadastrada é cliente ou engenheiro.
 
 **Clientes:** quem contrata a obra. Pode ser pessoa física ou jurídica. Além dos dados comuns de pessoa, guardamos um único documento: o **CPF**, se for pessoa física, ou o **CNPJ**, se for empresa. Para empresas, o nome guardado é o nome usado no dia a dia. Um cliente pode ter várias obras, por exemplo uma na casa e outra no comércio.
 
-**Concessionárias:** as distribuidoras de energia que aprovam a conexão do sistema à rede. Guardamos o nome, a sigla e o estado onde atuam.
-
 **Engenheiros:** além dos dados comuns de pessoa, guardamos o número do CREA. Cada obra tem um engenheiro responsável.
 
-**Equipes de instalação:** a Derivar trabalha com equipes fixas. Cada equipe tem **no mínimo** um instalador (eletricista) e um ajudante. Equipes que atendem obras maiores podem ter mais instaladores e mais ajudantes. Para cada equipe guardamos um nome que a identifique (por exemplo, "Equipe 01").
+**Concessionárias:** as distribuidoras de energia que aprovam a conexão do sistema à rede. Guardamos o nome, a sigla e o estado onde atuam.
 
-**Colaboradores:** as pessoas que fazem parte das equipes. Além dos dados comuns de pessoa, guardamos o CPF, a função (instalador ou ajudante) e a equipe a que pertencem. Cada colaborador faz parte de uma única equipe.
+**Obras:** cada obra pertence a um cliente, tem um engenheiro responsável e é ligada a uma concessionária. Guardamos:
+- o número da unidade consumidora (UC) e o endereço da instalação, que pode ser diferente do endereço do cliente;
+- o tipo de ligação (monofásica, bifásica ou trifásica);
+- a data de assinatura e o valor do contrato;
+- a **data de protocolo** do pedido de homologação na concessionária e a **data de aprovação**;
+- a **data prevista** para concluir a instalação e a **data em que ela foi concluída**.
 
-**Obras:** cada obra pertence a um cliente, tem um engenheiro responsável, é ligada a uma concessionária e é executada por uma ou mais equipes de instalação. Obras pequenas normalmente têm uma só equipe, mas usinas maiores precisam de várias equipes trabalhando juntas. As equipes são definidas depois do projeto e da homologação, quando a obra está perto de ir a campo. Uma mesma equipe faz várias obras ao longo do tempo. Guardamos o número da unidade consumidora (UC), o endereço da instalação, o tipo de ligação (monofásica, bifásica ou trifásica), a data de assinatura do contrato e o valor do contrato.
-
-**Etapas:** a lista padrão de etapas que toda obra percorre (vistoria técnica, projeto, homologação, instalação, vistoria da concessionária, ligação), em ordem.
-
-**Andamento das etapas:** para cada obra e cada etapa, registramos a **data prevista**, a **data de início** e a **data de conclusão**. Na homologação, por exemplo, a data de início é o dia do protocolo na concessionária, e a data de conclusão é o dia da aprovação.
+As datas de protocolo, aprovação e conclusão ficam em branco até que cada coisa aconteça.
 
 **Fabricantes:** as marcas dos equipamentos, com nome e país de origem.
 
@@ -53,16 +54,16 @@ A **potência da usina (kWp) não é digitada**. Ela é calculada pela soma dos 
 
 ## Relatórios que a diretoria quer ver
 
-- Uma lista das obras mostrando o cliente, o engenheiro responsável e a concessionária.
+- Uma lista das obras mostrando o cliente, o engenheiro responsável, a concessionária e a cidade.
 - Os equipamentos instalados em cada obra, com o fabricante e o valor cobrado.
-- O andamento das etapas de cada obra, mostrando o que já foi concluído e o que está pendente.
+- Os clientes com a cidade onde moram e quantas obras cada um contratou.
 - A potência total instalada (kWp) por engenheiro.
 - O valor total vendido em cada mês.
 - As concessionárias que têm mais de um certo número de obras.
 - O tempo que cada obra levou para ser homologada, em dias, para comparar as concessionárias.
-- As etapas que estão atrasadas, ou seja, que passaram da data prevista e ainda não foram concluídas.
+- As obras atrasadas, ou seja, que passaram da data prevista e ainda não foram concluídas.
 - Os equipamentos com a garantia vencendo nos próximos meses, para a empresa entrar em contato com o cliente.
-- As obras com potência acima da média da empresa.
+- As obras com valor de contrato acima da média da empresa.
 - Os equipamentos do catálogo que nunca foram usados em nenhuma obra.
 - A concessionária com o maior tempo médio de homologação.
 

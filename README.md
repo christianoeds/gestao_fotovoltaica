@@ -1,6 +1,6 @@
 # Gestão Fotovoltaica
 
-Sistema web para gerenciamento de obras de instalação de usinas solares fotovoltaicas, desenvolvido como trabalho final da disciplina de Banco de Dados. Permite cadastrar clientes, engenheiros, concessionárias, equipamentos e obras, acompanhar as etapas de cada obra (projeto, homologação, instalação etc.) e emitir relatórios a partir de consultas SQL.
+Sistema web para gerenciamento de obras de instalação de usinas solares fotovoltaicas, desenvolvido como trabalho final da disciplina de Banco de Dados. Permite cadastrar clientes, engenheiros, cidades, concessionárias, fabricantes, equipamentos e obras, acompanhar a homologação e a conclusão de cada obra e emitir relatórios a partir de consultas SQL.
 
 O sistema foi feito em **PHP puro, sem frameworks**, organizado em camadas no padrão **MVC** (Modelo, Visão e Controlador).
 

@@ -10,40 +10,40 @@ skinparam linetype ortho
 skinparam nodesep 60
 skinparam ranksep 70
 
+entity "cidade" as cidade {
+  * id : INT <<PK>>
+  --
+  * nome : VARCHAR(60) <<UK>>
+  * uf : CHAR(2) <<UK>>
+}
+
 ' ---------- Herança: pessoa e suas especializações ----------
 
 entity "pessoa" as pessoa {
   * id : INT <<PK>>
   --
-  * categoria : VARCHAR(12)
+  * cidade_id : INT <<FK>>
+  * categoria : VARCHAR(10)
   * nome : VARCHAR(100)
-  * telefone : VARCHAR(20)
+  * telefone : VARCHAR(11)
     email : VARCHAR(100)
   * logradouro : VARCHAR(100)
   * numero : VARCHAR(10)
   * bairro : VARCHAR(60)
-  * cidade : VARCHAR(60)
-  * uf : CHAR(2)
 }
 
 entity "cliente" as cliente {
-  * id : INT <<PK, FK>>
+  * id : INT <<PK>>
   --
-  * cpf_cnpj : VARCHAR(14) <<UK>>
+  * pessoa_id : INT <<FK, UK>>
+  * cpfCnpj : VARCHAR(14) <<UK>>
 }
 
 entity "engenheiro" as engenheiro {
-  * id : INT <<PK, FK>>
+  * id : INT <<PK>>
   --
+  * pessoa_id : INT <<FK, UK>>
   * crea : VARCHAR(20) <<UK>>
-}
-
-entity "colaborador" as colaborador {
-  * id : INT <<PK, FK>>
-  --
-  * equipe_id : INT <<FK>>
-  * cpf : CHAR(11) <<UK>>
-  * funcao : VARCHAR(10)
 }
 
 ' ---------- Demais tabelas ----------
@@ -62,33 +62,25 @@ entity "obra" as obra {
   * cliente_id : INT <<FK>>
   * engenheiro_id : INT <<FK>>
   * concessionaria_id : INT <<FK>>
-  * numero_uc : VARCHAR(20)
+  * cidade_id : INT <<FK>>
+  * numeroUc : VARCHAR(20)
   * logradouro : VARCHAR(100)
   * numero : VARCHAR(10)
   * bairro : VARCHAR(60)
-  * cidade : VARCHAR(60)
-  * uf : CHAR(2)
-  * tipo_ligacao : VARCHAR(10)
-  * data_contrato : DATE
-  * valor_contrato : DECIMAL(12,2)
-}
-
-entity "equipe" as equipe {
-  * id : INT <<PK>>
-  --
-  * nome : VARCHAR(50) <<UK>>
-}
-
-entity "obra_equipe" as obra_equipe {
-  * obra_id : INT <<PK, FK>>
-  * equipe_id : INT <<PK, FK>>
+  * tipoLigacao : VARCHAR(10)
+  * dataContrato : DATE
+  * valorContrato : DECIMAL(12,2)
+    dataProtocolo : DATE
+    dataAprovacao : DATE
+  * dataPrevista : DATE
+    dataConclusao : DATE
 }
 
 entity "fabricante" as fabricante {
   * id : INT <<PK>>
   --
   * nome : VARCHAR(60) <<UK>>
-  * pais_origem : VARCHAR(60)
+  * paisOrigem : VARCHAR(60)
 }
 
 entity "equipamento" as equipamento {
@@ -97,9 +89,9 @@ entity "equipamento" as equipamento {
   * fabricante_id : INT <<FK>>
   * tipo : VARCHAR(20)
   * modelo : VARCHAR(100)
-    potencia_w : INT
-  * preco_atual : DECIMAL(10,2)
-  * garantia_anos : INT
+    potenciaW : INT
+  * precoAtual : DECIMAL(10,2)
+  * garantiaAnos : INT
 }
 
 entity "obra_equipamento" as obra_equipamento {
@@ -107,45 +99,23 @@ entity "obra_equipamento" as obra_equipamento {
   * equipamento_id : INT <<PK, FK>>
   --
   * quantidade : INT
-  * valor_unitario : DECIMAL(10,2)
-}
-
-entity "etapa" as etapa {
-  * id : INT <<PK>>
-  --
-  * nome : VARCHAR(50) <<UK>>
-  * ordem : INT <<UK>>
-}
-
-entity "obra_etapa" as obra_etapa {
-  * obra_id : INT <<PK, FK>>
-  * etapa_id : INT <<PK, FK>>
-  --
-  * data_prevista : DATE
-    data_inicio : DATE
-    data_conclusao : DATE
+  * valorUnitario : DECIMAL(10,2)
 }
 
 ' Herança (1:1 opcional do lado da especialização)
-pessoa  ||--o| cliente
-pessoa  ||--o| engenheiro
-pessoa  ||--o| colaborador
+pessoa ||--o| cliente
+pessoa ||--o| engenheiro
 
 ' Relacionamentos
+cidade ||--o{ pessoa
+cidade ||--o{ obra
+
 cliente        ||--o{ obra
 engenheiro     ||--o{ obra
 concessionaria ||--o{ obra
 
-equipe ||--|{ colaborador
-
-obra   ||--o{ obra_equipe
-equipe ||--o{ obra_equipe
-
 fabricante  ||--o{ equipamento
 obra        ||--o{ obra_equipamento
 equipamento ||--o{ obra_equipamento
-
-obra  ||--o{ obra_etapa
-etapa ||--o{ obra_etapa
 
 @enduml

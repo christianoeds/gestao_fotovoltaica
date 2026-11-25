@@ -11,6 +11,9 @@
 -- ATENÇÃO: este script apaga o banco gestao_fotovoltaica, se ele existir,
 -- e cria tudo do zero. Os dados de exemplo voltam com o 02_povoamento.sql.
 --
+-- Padrão de nomes:
+--   tabelas em snake_case, colunas em camelCase, chaves estrangeiras tabela_id
+--
 -- Padrão de nomes das restrições:
 --   pk_tabela               chave primária
 --   uk_tabela_coluna        valor único
@@ -28,42 +31,65 @@ USE gestao_fotovoltaica;
 
 
 -- =============================================================================
+-- CIDADES
+-- =============================================================================
+
+-- -----------------------------------------------------------------------------
+-- cidade: cidades das pessoas e das obras
+-- -----------------------------------------------------------------------------
+CREATE TABLE cidade (
+    id    INT          NOT NULL AUTO_INCREMENT,
+    nome  VARCHAR(60)  NOT NULL,
+    uf    CHAR(2)      NOT NULL,
+
+    CONSTRAINT pk_cidade PRIMARY KEY (id),
+    -- pode haver cidades com o mesmo nome em estados diferentes (RN13)
+    CONSTRAINT uk_cidade_nome_uf UNIQUE (nome, uf)
+) ENGINE = InnoDB
+  COMMENT = 'Cidades onde moram as pessoas e onde ficam as obras.';
+
+
+-- =============================================================================
 -- HIERARQUIA DE PESSOAS (herança: uma tabela para cada entidade)
 -- =============================================================================
 
 -- -----------------------------------------------------------------------------
--- pessoa: dados comuns a clientes, engenheiros e colaboradores
+-- pessoa: dados comuns a clientes e engenheiros
 -- -----------------------------------------------------------------------------
 CREATE TABLE pessoa (
     id          INT           NOT NULL AUTO_INCREMENT,
-    categoria   VARCHAR(12)   NOT NULL,
+    cidade_id   INT           NOT NULL,
+    categoria   VARCHAR(10)   NOT NULL,
     nome        VARCHAR(100)  NOT NULL,
-    telefone    VARCHAR(20)   NOT NULL,
+    telefone    VARCHAR(11)   NOT NULL,
     email       VARCHAR(100)  NULL,
     logradouro  VARCHAR(100)  NOT NULL,
     numero      VARCHAR(10)   NOT NULL,
     bairro      VARCHAR(60)   NOT NULL,
-    cidade      VARCHAR(60)   NOT NULL,
-    uf          CHAR(2)       NOT NULL,
 
     CONSTRAINT pk_pessoa PRIMARY KEY (id),
-    CONSTRAINT ck_pessoa_categoria
-        CHECK (categoria IN ('cliente', 'engenheiro', 'colaborador'))
+    CONSTRAINT ck_pessoa_categoria CHECK (categoria IN ('cliente', 'engenheiro')),
+    CONSTRAINT fk_pessoa_cidade FOREIGN KEY (cidade_id)
+        REFERENCES cidade (id)
+        ON DELETE RESTRICT
 ) ENGINE = InnoDB
-  COMMENT = 'Dados comuns a todas as pessoas do sistema (RN16).';
+  COMMENT = 'Dados comuns a clientes e engenheiros (RN12).';
 
 -- -----------------------------------------------------------------------------
 -- cliente: especialização de pessoa (quem contrata obras)
 -- -----------------------------------------------------------------------------
 CREATE TABLE cliente (
-    id        INT          NOT NULL,
-    cpf_cnpj  VARCHAR(14)  NOT NULL,
+    id         INT          NOT NULL AUTO_INCREMENT,
+    pessoa_id  INT          NOT NULL,
+    cpfCnpj    VARCHAR(14)  NOT NULL,
 
     CONSTRAINT pk_cliente PRIMARY KEY (id),
-    CONSTRAINT uk_cliente_cpf_cnpj UNIQUE (cpf_cnpj),
+    -- o UNIQUE em pessoa_id faz da herança um relacionamento 1:1
+    CONSTRAINT uk_cliente_pessoa UNIQUE (pessoa_id),
+    CONSTRAINT uk_cliente_cpf_cnpj UNIQUE (cpfCnpj),
     -- só números: 11 dígitos (CPF, pessoa física) ou 14 dígitos (CNPJ, pessoa jurídica)
-    CONSTRAINT ck_cliente_cpf_cnpj CHECK (cpf_cnpj REGEXP '^([0-9]{11}|[0-9]{14})$'),
-    CONSTRAINT fk_cliente_pessoa FOREIGN KEY (id)
+    CONSTRAINT ck_cliente_cpf_cnpj CHECK (cpfCnpj REGEXP '^([0-9]{11}|[0-9]{14})$'),
+    CONSTRAINT fk_cliente_pessoa FOREIGN KEY (pessoa_id)
         REFERENCES pessoa (id)
         ON DELETE CASCADE
 ) ENGINE = InnoDB
@@ -73,54 +99,18 @@ CREATE TABLE cliente (
 -- engenheiro: especialização de pessoa (responsável técnico)
 -- -----------------------------------------------------------------------------
 CREATE TABLE engenheiro (
-    id    INT          NOT NULL,
-    crea  VARCHAR(20)  NOT NULL,
+    id         INT          NOT NULL AUTO_INCREMENT,
+    pessoa_id  INT          NOT NULL,
+    crea       VARCHAR(20)  NOT NULL,
 
     CONSTRAINT pk_engenheiro PRIMARY KEY (id),
+    CONSTRAINT uk_engenheiro_pessoa UNIQUE (pessoa_id),
     CONSTRAINT uk_engenheiro_crea UNIQUE (crea),
-    CONSTRAINT fk_engenheiro_pessoa FOREIGN KEY (id)
+    CONSTRAINT fk_engenheiro_pessoa FOREIGN KEY (pessoa_id)
         REFERENCES pessoa (id)
         ON DELETE CASCADE
 ) ENGINE = InnoDB
   COMMENT = 'Especialização de pessoa: engenheiros responsáveis pelas obras.';
-
-
--- =============================================================================
--- EQUIPES
--- =============================================================================
-
--- -----------------------------------------------------------------------------
--- equipe: equipes de instalação
--- -----------------------------------------------------------------------------
-CREATE TABLE equipe (
-    id    INT          NOT NULL AUTO_INCREMENT,
-    nome  VARCHAR(50)  NOT NULL,
-
-    CONSTRAINT pk_equipe PRIMARY KEY (id),
-    CONSTRAINT uk_equipe_nome UNIQUE (nome)
-) ENGINE = InnoDB
-  COMMENT = 'Equipes de instalação (mínimo de 1 instalador e 1 ajudante, RN12).';
-
--- -----------------------------------------------------------------------------
--- colaborador: especialização de pessoa (membro de uma equipe)
--- -----------------------------------------------------------------------------
-CREATE TABLE colaborador (
-    id         INT          NOT NULL,
-    equipe_id  INT          NOT NULL,
-    cpf        CHAR(11)     NOT NULL,
-    funcao     VARCHAR(10)  NOT NULL,
-
-    CONSTRAINT pk_colaborador PRIMARY KEY (id),
-    CONSTRAINT uk_colaborador_cpf UNIQUE (cpf),
-    CONSTRAINT ck_colaborador_funcao CHECK (funcao IN ('instalador', 'ajudante')),
-    CONSTRAINT fk_colaborador_pessoa FOREIGN KEY (id)
-        REFERENCES pessoa (id)
-        ON DELETE CASCADE,
-    CONSTRAINT fk_colaborador_equipe FOREIGN KEY (equipe_id)
-        REFERENCES equipe (id)
-        ON DELETE RESTRICT
-) ENGINE = InnoDB
-  COMMENT = 'Especialização de pessoa: membros das equipes de instalação.';
 
 
 -- =============================================================================
@@ -145,9 +135,9 @@ CREATE TABLE concessionaria (
 -- fabricante: marcas dos equipamentos
 -- -----------------------------------------------------------------------------
 CREATE TABLE fabricante (
-    id           INT          NOT NULL AUTO_INCREMENT,
-    nome         VARCHAR(60)  NOT NULL,
-    pais_origem  VARCHAR(60)  NOT NULL,
+    id          INT          NOT NULL AUTO_INCREMENT,
+    nome        VARCHAR(60)  NOT NULL,
+    paisOrigem  VARCHAR(60)  NOT NULL,
 
     CONSTRAINT pk_fabricante PRIMARY KEY (id),
     CONSTRAINT uk_fabricante_nome UNIQUE (nome)
@@ -162,37 +152,22 @@ CREATE TABLE equipamento (
     fabricante_id  INT            NOT NULL,
     tipo           VARCHAR(20)    NOT NULL,
     modelo         VARCHAR(100)   NOT NULL,
-    potencia_w     INT            NULL,
-    preco_atual    DECIMAL(10,2)  NOT NULL,
-    garantia_anos  INT            NOT NULL,
+    potenciaW      INT            NULL,
+    precoAtual     DECIMAL(10,2)  NOT NULL,
+    garantiaAnos   INT            NOT NULL,
 
     CONSTRAINT pk_equipamento PRIMARY KEY (id),
     CONSTRAINT ck_equipamento_tipo
         CHECK (tipo IN ('modulo', 'inversor', 'microinversor', 'estrutura', 'string_box', 'cabo')),
-    -- potencia_w aceita NULL: o CHECK só recusa resultado FALSO, e NULL > 0 resulta em "desconhecido"
-    CONSTRAINT ck_equipamento_potencia CHECK (potencia_w > 0),
-    CONSTRAINT ck_equipamento_preco    CHECK (preco_atual > 0),
-    CONSTRAINT ck_equipamento_garantia CHECK (garantia_anos >= 0),
+    -- potenciaW aceita NULL: o CHECK só recusa resultado FALSO, e NULL > 0 resulta em "desconhecido"
+    CONSTRAINT ck_equipamento_potencia CHECK (potenciaW > 0),
+    CONSTRAINT ck_equipamento_preco    CHECK (precoAtual > 0),
+    CONSTRAINT ck_equipamento_garantia CHECK (garantiaAnos >= 0),
     CONSTRAINT fk_equipamento_fabricante FOREIGN KEY (fabricante_id)
         REFERENCES fabricante (id)
         ON DELETE RESTRICT
 ) ENGINE = InnoDB
   COMMENT = 'Catálogo de equipamentos (módulos, inversores, estruturas etc.).';
-
--- -----------------------------------------------------------------------------
--- etapa: etapas padrão de toda obra
--- -----------------------------------------------------------------------------
-CREATE TABLE etapa (
-    id     INT          NOT NULL AUTO_INCREMENT,
-    nome   VARCHAR(50)  NOT NULL,
-    ordem  INT          NOT NULL,
-
-    CONSTRAINT pk_etapa PRIMARY KEY (id),
-    CONSTRAINT uk_etapa_nome  UNIQUE (nome),
-    CONSTRAINT uk_etapa_ordem UNIQUE (ordem),
-    CONSTRAINT ck_etapa_ordem CHECK (ordem > 0)
-) ENGINE = InnoDB
-  COMMENT = 'Etapas padrão pelas quais toda obra passa, em ordem.';
 
 
 -- =============================================================================
@@ -207,20 +182,33 @@ CREATE TABLE obra (
     cliente_id         INT            NOT NULL,
     engenheiro_id      INT            NOT NULL,
     concessionaria_id  INT            NOT NULL,
-    numero_uc          VARCHAR(20)    NOT NULL,
+    cidade_id          INT            NOT NULL,
+    numeroUc           VARCHAR(20)    NOT NULL,
     logradouro         VARCHAR(100)   NOT NULL,
     numero             VARCHAR(10)    NOT NULL,
     bairro             VARCHAR(60)    NOT NULL,
-    cidade             VARCHAR(60)    NOT NULL,
-    uf                 CHAR(2)        NOT NULL,
-    tipo_ligacao       VARCHAR(10)    NOT NULL,
-    data_contrato      DATE           NOT NULL,
-    valor_contrato     DECIMAL(12,2)  NOT NULL,
+    tipoLigacao        VARCHAR(10)    NOT NULL,
+    dataContrato       DATE           NOT NULL,
+    valorContrato      DECIMAL(12,2)  NOT NULL,
+    dataProtocolo      DATE           NULL,
+    dataAprovacao      DATE           NULL,
+    dataPrevista       DATE           NOT NULL,
+    dataConclusao      DATE           NULL,
 
     CONSTRAINT pk_obra PRIMARY KEY (id),
     CONSTRAINT ck_obra_tipo_ligacao
-        CHECK (tipo_ligacao IN ('monofasica', 'bifasica', 'trifasica')),
-    CONSTRAINT ck_obra_valor CHECK (valor_contrato > 0),
+        CHECK (tipoLigacao IN ('monofasica', 'bifasica', 'trifasica')),
+    CONSTRAINT ck_obra_valor CHECK (valorContrato > 0),
+    -- nenhuma data do andamento pode ser anterior ao contrato (RN06)
+    -- (datas vazias passam, porque NULL na comparação resulta em "desconhecido")
+    CONSTRAINT ck_obra_protocolo CHECK (dataProtocolo >= dataContrato),
+    CONSTRAINT ck_obra_prevista  CHECK (dataPrevista  >= dataContrato),
+    CONSTRAINT ck_obra_conclusao CHECK (dataConclusao >= dataContrato),
+    -- a aprovação não pode ser anterior ao protocolo...
+    CONSTRAINT ck_obra_aprovacao CHECK (dataAprovacao >= dataProtocolo),
+    -- ...e só pode existir se o protocolo também existir
+    CONSTRAINT ck_obra_aprovacao_protocolo
+        CHECK (dataAprovacao IS NULL OR dataProtocolo IS NOT NULL),
     CONSTRAINT fk_obra_cliente FOREIGN KEY (cliente_id)
         REFERENCES cliente (id)
         ON DELETE RESTRICT,
@@ -229,27 +217,12 @@ CREATE TABLE obra (
         ON DELETE RESTRICT,
     CONSTRAINT fk_obra_concessionaria FOREIGN KEY (concessionaria_id)
         REFERENCES concessionaria (id)
+        ON DELETE RESTRICT,
+    CONSTRAINT fk_obra_cidade FOREIGN KEY (cidade_id)
+        REFERENCES cidade (id)
         ON DELETE RESTRICT
 ) ENGINE = InnoDB
   COMMENT = 'Obras de instalação. O endereço é o local da instalação.';
-
--- -----------------------------------------------------------------------------
--- obra_equipe: equipes alocadas em cada obra (N:N)
--- -----------------------------------------------------------------------------
-CREATE TABLE obra_equipe (
-    obra_id    INT  NOT NULL,
-    equipe_id  INT  NOT NULL,
-
-    -- a chave composta impede alocar a mesma equipe duas vezes na mesma obra (RN15)
-    CONSTRAINT pk_obra_equipe PRIMARY KEY (obra_id, equipe_id),
-    CONSTRAINT fk_obra_equipe_obra FOREIGN KEY (obra_id)
-        REFERENCES obra (id)
-        ON DELETE RESTRICT,
-    CONSTRAINT fk_obra_equipe_equipe FOREIGN KEY (equipe_id)
-        REFERENCES equipe (id)
-        ON DELETE RESTRICT
-) ENGINE = InnoDB
-  COMMENT = 'Equipes de instalação alocadas em cada obra.';
 
 -- -----------------------------------------------------------------------------
 -- obra_equipamento: equipamentos utilizados em cada obra (N:N)
@@ -258,40 +231,18 @@ CREATE TABLE obra_equipamento (
     obra_id         INT            NOT NULL,
     equipamento_id  INT            NOT NULL,
     quantidade      INT            NOT NULL,
-    valor_unitario  DECIMAL(10,2)  NOT NULL,
+    valorUnitario   DECIMAL(10,2)  NOT NULL,
 
+    -- a chave composta impede registrar o mesmo equipamento duas vezes na mesma obra
     CONSTRAINT pk_obra_equipamento PRIMARY KEY (obra_id, equipamento_id),
     CONSTRAINT ck_obra_equipamento_quantidade CHECK (quantidade > 0),
-    CONSTRAINT ck_obra_equipamento_valor      CHECK (valor_unitario > 0),
+    CONSTRAINT ck_obra_equipamento_valor      CHECK (valorUnitario > 0),
+    -- excluir a obra exclui os equipamentos registrados nela (RN03)
     CONSTRAINT fk_obra_equipamento_obra FOREIGN KEY (obra_id)
         REFERENCES obra (id)
-        ON DELETE RESTRICT,
+        ON DELETE CASCADE,
     CONSTRAINT fk_obra_equipamento_equipamento FOREIGN KEY (equipamento_id)
         REFERENCES equipamento (id)
         ON DELETE RESTRICT
 ) ENGINE = InnoDB
   COMMENT = 'Equipamentos usados em cada obra, com o valor cobrado na obra (RN07).';
-
--- -----------------------------------------------------------------------------
--- obra_etapa: andamento de cada etapa em cada obra (N:N)
--- -----------------------------------------------------------------------------
-CREATE TABLE obra_etapa (
-    obra_id         INT   NOT NULL,
-    etapa_id        INT   NOT NULL,
-    data_prevista   DATE  NOT NULL,
-    data_inicio     DATE  NULL,
-    data_conclusao  DATE  NULL,
-
-    CONSTRAINT pk_obra_etapa PRIMARY KEY (obra_id, etapa_id),
-    -- a conclusão não pode ser anterior ao início (RN06)
-    CONSTRAINT ck_obra_etapa_datas CHECK (data_conclusao >= data_inicio),
-    -- a etapa só pode ser concluída se tiver começado
-    CONSTRAINT ck_obra_etapa_inicio CHECK (data_conclusao IS NULL OR data_inicio IS NOT NULL),
-    CONSTRAINT fk_obra_etapa_obra FOREIGN KEY (obra_id)
-        REFERENCES obra (id)
-        ON DELETE RESTRICT,
-    CONSTRAINT fk_obra_etapa_etapa FOREIGN KEY (etapa_id)
-        REFERENCES etapa (id)
-        ON DELETE RESTRICT
-) ENGINE = InnoDB
-  COMMENT = 'Andamento das etapas de cada obra (datas prevista, de início e de conclusão).';

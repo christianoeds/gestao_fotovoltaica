@@ -13,42 +13,35 @@ actor "Diretoria" as diretoria
 rectangle "Sistema de Gestão Fotovoltaica" {
   usecase "UC01 - Manter clientes" as UC01
   usecase "UC02 - Manter obras" as UC02
-  usecase "UC12 - Consultar detalhes da obra" as UC12
-  usecase "UC10 - Registrar andamento\ndas etapas" as UC10
-  usecase "UC11 - Registrar equipamentos\nda obra" as UC11
-  usecase "UC14 - Alocar equipes\nna obra" as UC14
+  usecase "UC10 - Consultar detalhes da obra" as UC10
+  usecase "UC08 - Registrar andamento\nda obra" as UC08
+  usecase "UC09 - Registrar equipamentos\nda obra" as UC09
 
-  usecase "UC03 - Manter concessionárias" as UC03
-  usecase "UC04 - Manter engenheiros" as UC04
-  usecase "UC05 - Manter equipes de instalação" as UC05
-  usecase "UC06 - Manter colaboradores" as UC06
-  usecase "UC07 - Manter fabricantes" as UC07
-  usecase "UC08 - Manter equipamentos" as UC08
-  usecase "UC09 - Manter etapas" as UC09
-  usecase "UC13 - Emitir relatórios" as UC13
+  usecase "UC03 - Manter engenheiros" as UC03
+  usecase "UC04 - Manter cidades" as UC04
+  usecase "UC05 - Manter concessionárias" as UC05
+  usecase "UC06 - Manter fabricantes" as UC06
+  usecase "UC07 - Manter equipamentos" as UC07
+  usecase "UC11 - Emitir relatórios" as UC11
 }
 
 comercial --> UC01
 comercial --> UC02
-comercial --> UC12
+comercial --> UC10
 
-engenheiro --> UC12
 engenheiro --> UC10
-engenheiro --> UC11
-engenheiro --> UC14
+engenheiro --> UC08
+engenheiro --> UC09
 
-diretoria --> UC12
+diretoria --> UC10
 diretoria --> UC03
 diretoria --> UC04
 diretoria --> UC05
 diretoria --> UC06
 diretoria --> UC07
-diretoria --> UC08
-diretoria --> UC09
-diretoria --> UC13
+diretoria --> UC11
 
-UC10 .> UC12 : <<extend>>
-UC11 .> UC12 : <<extend>>
-UC14 .> UC12 : <<extend>>
+UC08 .> UC10 : <<extend>>
+UC09 .> UC10 : <<extend>>
 
 @enduml
