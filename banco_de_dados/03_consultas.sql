@@ -151,3 +151,22 @@ FROM concessionaria
 INNER JOIN obra ON concessionaria.id = obra.concessionaria_id
 WHERE (obra.dataAprovacao IS NOT NULL)
 ORDER BY tempoAprovacao DESC, obra.dataProtocolo;
+
+
+-- -----------------------------------------------------------------------------
+-- Consulta 08 (função de data) - RF18
+-- Lista as obras atrasadas: as que ainda não foram concluídas e cuja data
+-- prevista de conclusão já passou. Mostra o número da obra, o nome do
+-- cliente, a data prevista e há quantos dias a obra está atrasada, contando
+-- até a data de hoje (CURDATE()). Ordena da obra mais atrasada para a menos.
+-- -----------------------------------------------------------------------------
+
+SELECT obra.id AS obra,
+       pessoa.nome as cliente,
+       obra.dataPrevista,
+       DATEDIFF(CURDATE(), obra.dataPrevista) AS tempoAtraso
+FROM obra
+INNER JOIN cliente ON obra.cliente_id = cliente.id
+INNER JOIN pessoa ON cliente.pessoa_id = pessoa.id
+WHERE (DATEDIFF(CURDATE(), obra.dataPrevista) > 0 AND obra.dataConclusao IS NULL)
+ORDER BY tempoAtraso DESC;
