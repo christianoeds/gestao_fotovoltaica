@@ -142,11 +142,12 @@ ORDER BY qtdeObras DESC;
 -- de fora. Ordena da homologação mais demorada para a mais rápida.
 -- -----------------------------------------------------------------------------
 
-SELECT concessionaria.sigla,
+SELECT obra.id as obra,
+       concessionaria.sigla,
        obra.dataProtocolo,
        obra.dataAprovacao,
        DATEDIFF(obra.dataAprovacao, obra.dataProtocolo) AS tempoAprovacao
 FROM concessionaria
 INNER JOIN obra ON concessionaria.id = obra.concessionaria_id
-WHERE(obra.dataAprovacao IS NOT NULL)
-ORDER BY tempoAprovacao DESC;
+WHERE (obra.dataAprovacao IS NOT NULL)
+ORDER BY tempoAprovacao DESC, obra.dataProtocolo;
