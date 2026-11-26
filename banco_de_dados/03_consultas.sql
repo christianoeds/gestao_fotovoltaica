@@ -216,3 +216,19 @@ INNER JOIN cliente ON obra.cliente_id = cliente.id
 INNER JOIN pessoa    ON cliente.pessoa_id = pessoa.id
 WHERE (obra.valorContrato > (SELECT AVG(obra.valorContrato) FROM obra))
 ORDER BY obra.valorContrato DESC;
+
+-- -----------------------------------------------------------------------------
+-- Consulta 11 (aninhada) - RF21
+-- Lista os equipamentos do catálogo que nunca foram usados em nenhuma obra,
+-- com o tipo, o modelo, o fabricante e o preço atual. Uma subconsulta busca
+-- os equipamentos que já aparecem em alguma obra, e o NOT IN deixa só os
+-- que não estão nessa lista.
+-- -----------------------------------------------------------------------------
+
+SELECT equipamento.tipo,
+       equipamento.modelo,
+       fabricante.nome as fabricante,
+       equipamento.precoAtual
+FROM equipamento
+INNER JOIN fabricante ON equipamento.fabricante_id = fabricante.id
+WHERE (equipamento.id NOT IN (SELECT obra_equipamento.equipamento_id FROM obra_equipamento));
