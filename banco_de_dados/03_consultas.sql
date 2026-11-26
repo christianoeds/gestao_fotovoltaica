@@ -232,3 +232,31 @@ SELECT equipamento.tipo,
 FROM equipamento
 INNER JOIN fabricante ON equipamento.fabricante_id = fabricante.id
 WHERE (equipamento.id NOT IN (SELECT obra_equipamento.equipamento_id FROM obra_equipamento));
+
+-- -----------------------------------------------------------------------------
+-- Consulta 12 (aninhada) - RF22
+-- Mostra a concessionária que mais demora para homologar, ou seja, a que tem
+-- a maior média de dias entre o protocolo e a aprovação, considerando só as
+-- obras já aprovadas. Mostra o nome, a sigla e a média de dias. Uma
+-- subconsulta calcula a média de cada concessionária, outra pega a maior
+-- dessas médias, e o HAVING deixa só a concessionária com essa média.
+-- -----------------------------------------------------------------------------
+
+SELECT concessionaria.nome,
+       concessionaria.sigla,
+       AVG(DATEDIFF(obra.dataAprovacao, obra.dataProtocolo)) AS diasAprovacao
+FROM concessionaria
+INNER JOIN obra ON obra.concessionaria_id = concessionaria.id
+WHERE (obra.dataAprovacao IS NOT NULL)
+GROUP BY concessionaria.nome, concessionaria.sigla
+HAVING AVG(DATEDIFF(obra.dataAprovacao, obra.dataProtocolo)) = (
+    SELECT MAX(medias.diasAprovacao)
+    FROM (
+        SELECT AVG(DATEDIFF(obra.dataAprovacao, obra.dataProtocolo)) AS diasAprovacao
+        FROM concessionaria
+        INNER JOIN obra ON obra.concessionaria_id = concessionaria.id
+        WHERE (obra.dataAprovacao IS NOT NULL)
+        GROUP BY concessionaria.id
+    ) AS medias
+)
+ORDER BY diasAprovacao DESC;
