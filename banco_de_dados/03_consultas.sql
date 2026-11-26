@@ -197,3 +197,22 @@ INNER JOIN pessoa             ON cliente.pessoa_id = pessoa.id
 WHERE (obra.dataConclusao IS NOT NULL)
   AND (DATE_ADD(obra.dataConclusao, INTERVAL equipamento.garantiaAnos YEAR) BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 6 MONTH))
 ORDER BY fimGarantia;
+
+
+-- -----------------------------------------------------------------------------
+-- Consulta 10 (aninhada) - RF20
+-- Lista as obras cujo valor de contrato é maior que a média dos valores de
+-- contrato de todas as obras, com o número da obra, o nome do cliente, a data
+-- e o valor do contrato. A média é calculada por uma subconsulta no WHERE.
+-- Ordena da obra de maior valor para a de menor.
+-- -----------------------------------------------------------------------------
+
+SELECT obra.id AS numObra,
+       pessoa.nome AS cliente,
+       obra.dataContrato,
+       obra.valorContrato
+FROM obra
+INNER JOIN cliente ON obra.cliente_id = cliente.id
+INNER JOIN pessoa    ON cliente.pessoa_id = pessoa.id
+WHERE (obra.valorContrato > (SELECT AVG(obra.valorContrato) FROM obra))
+ORDER BY obra.valorContrato DESC;
