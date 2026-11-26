@@ -90,7 +90,7 @@ ORDER BY cliente;
 -- -----------------------------------------------------------------------------
 
 SELECT pessoa.nome AS engenheiro,
-       ROUND(SUM(equipamento.potenciaW/1000 * obra_equipamento.quantidade),2) AS potencia_instalada
+       ROUND(SUM(equipamento.potenciaW/1000 * obra_equipamento.quantidade),2) AS potenciaInstalada
 FROM pessoa
 INNER JOIN engenheiro         ON engenheiro.pessoa_id = pessoa.id
 INNER JOIN obra             ON obra.engenheiro_id = engenheiro.id
@@ -98,7 +98,7 @@ INNER JOIN obra_equipamento ON obra_equipamento.obra_id = obra.id
 INNER JOIN equipamento      ON obra_equipamento.equipamento_id = equipamento.id
 WHERE (equipamento.tipo = 'modulo' AND obra.dataConclusao IS NOT NULL)
 GROUP BY pessoa.id, pessoa.nome
-ORDER BY potencia_instalada DESC;
+ORDER BY potenciaInstalada DESC;
 
 
 
@@ -110,7 +110,7 @@ ORDER BY potencia_instalada DESC;
 -- -----------------------------------------------------------------------------
 
 SELECT COUNT(obra.id) as quantidade,
-       SUM(obra.valorContrato) as valor_total,
+       SUM(obra.valorContrato) as valorTotal,
        MONTH(obra.dataContrato) as mes,
        YEAR(obra.dataContrato) as ano
 FROM obra
@@ -126,9 +126,27 @@ ORDER BY ano, mes;
 -- contagem. No sistema, o número mínimo de obras é informado pelo usuário.
 -- -----------------------------------------------------------------------------
 
-SELECT concessionaria.nome, concessionaria.sigla, COUNT(obra.concessionaria_id) AS qtde_obras
+SELECT concessionaria.nome, concessionaria.sigla, COUNT(obra.concessionaria_id) AS qtdeObras
 FROM concessionaria
 INNER JOIN obra ON concessionaria.id = obra.concessionaria_id
 GROUP BY concessionaria.nome, concessionaria.sigla
 HAVING COUNT(obra.concessionaria_id) > 2
-ORDER BY qtde_obras DESC;
+ORDER BY qtdeObras DESC;
+
+
+-- -----------------------------------------------------------------------------
+-- Consulta 07 (função de data) - RF17
+-- Mostra, para cada obra já homologada, a concessionária, a data do protocolo,
+-- a data da aprovação e quantos dias a concessionária levou para aprovar
+-- (diferença entre a aprovação e o protocolo). As obras sem aprovação ficam
+-- de fora. Ordena da homologação mais demorada para a mais rápida.
+-- -----------------------------------------------------------------------------
+
+SELECT concessionaria.sigla,
+       obra.dataProtocolo,
+       obra.dataAprovacao,
+       DATEDIFF(obra.dataAprovacao, obra.dataProtocolo) AS tempoAprovacao
+FROM concessionaria
+INNER JOIN obra ON concessionaria.id = obra.concessionaria_id
+WHERE(obra.dataAprovacao IS NOT NULL)
+ORDER BY tempoAprovacao DESC;
