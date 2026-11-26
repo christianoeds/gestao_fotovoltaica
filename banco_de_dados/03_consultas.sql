@@ -170,3 +170,30 @@ INNER JOIN cliente ON obra.cliente_id = cliente.id
 INNER JOIN pessoa ON cliente.pessoa_id = pessoa.id
 WHERE (DATEDIFF(CURDATE(), obra.dataPrevista) > 0 AND obra.dataConclusao IS NULL)
 ORDER BY tempoAtraso DESC;
+
+-- -----------------------------------------------------------------------------
+-- Consulta 09 (função de data) - RF19
+-- Lista os equipamentos instalados cuja garantia vence nos próximos 6 meses,
+-- contando a partir de hoje (CURDATE()). A garantia começa na data de
+-- conclusão da obra e dura a quantidade de anos de garantia do equipamento.
+-- Mostra o número da obra, o nome do cliente, o tipo e o modelo do
+-- equipamento, a data de conclusão da obra, a data de fim da garantia e os
+-- dias restantes para o vencimento da garante, ordenando pela
+-- garantia que vence primeiro para a que vence por último.
+-- -----------------------------------------------------------------------------
+
+SELECT obra.id AS obra,
+       pessoa.nome AS cliente,
+       equipamento.tipo AS tipoEquipamento,
+       equipamento.modelo AS modeloEquipamento,
+       obra.dataConclusao,
+       DATE_ADD(obra.dataConclusao, INTERVAL equipamento.garantiaAnos YEAR) AS fimGarantia,
+       DATEDIFF(DATE_ADD(obra.dataConclusao, INTERVAL equipamento.garantiaAnos YEAR), CURDATE()) AS diasRestantes
+FROM equipamento
+INNER JOIN obra_equipamento ON obra_equipamento.equipamento_id = equipamento.id
+INNER JOIN obra             ON obra_equipamento.obra_id = obra.id
+INNER JOIN cliente          ON obra.cliente_id = cliente.id
+INNER JOIN pessoa             ON cliente.pessoa_id = pessoa.id
+WHERE (obra.dataConclusao IS NOT NULL)
+  AND (DATE_ADD(obra.dataConclusao, INTERVAL equipamento.garantiaAnos YEAR) BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 6 MONTH))
+ORDER BY fimGarantia;
