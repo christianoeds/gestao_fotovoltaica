@@ -56,7 +56,7 @@ A **potência da usina (kWp) não é digitada**. Ela é calculada pela soma dos 
 
 - Uma lista das obras mostrando o cliente, o engenheiro responsável, a concessionária e a cidade.
 - Os equipamentos instalados em cada obra, com o fabricante e o valor cobrado.
-- Os clientes com a cidade onde moram e quantas obras cada um contratou.
+- Os clientes com o documento, o tipo (pessoa física ou jurídica) e a cidade onde moram.
 - A potência total instalada (kWp) por engenheiro.
 - O valor total vendido em cada mês.
 - As concessionárias que têm mais de um certo número de obras.

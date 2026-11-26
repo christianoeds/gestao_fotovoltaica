@@ -42,7 +42,7 @@ Cada relatório corresponde a uma das consultas SQL exigidas no trabalho.
 |---|---|---|
 | RF11 | Listar as obras com o nome do cliente, do engenheiro responsável, da concessionária e da cidade. | Junção |
 | RF12 | Listar os equipamentos instalados em cada obra, com o fabricante e o valor cobrado. | Junção |
-| RF13 | Listar os clientes com a cidade onde moram e a quantidade de obras de cada um. | Junção |
+| RF13 | Listar os clientes com o CPF ou CNPJ, o tipo (pessoa física ou jurídica, deduzido pelo tamanho do documento) e a cidade e UF onde moram. | Junção |
 | RF14 | Exibir a potência total instalada (kWp) por engenheiro. | Agrupamento |
 | RF15 | Exibir o valor total vendido em cada mês. | Agrupamento |
 | RF16 | Listar as concessionárias com mais de uma quantidade informada de obras. | Agrupamento com `HAVING` |
