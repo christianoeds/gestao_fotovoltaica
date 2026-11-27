@@ -1,14 +1,19 @@
 <?php
 
 /**
- * Página inicial do sistema.
- * Provisória: na Parte 1.4 ela passa a usar o layout (cabeçalho, menu e rodapé).
+ * Controlador da página inicial.
+ *
+ * URL: index.php?pagina=inicio (ou só index.php, que abre o início por padrão)
  */
-class InicioControlador
+class InicioControlador extends Controlador
 {
+    /**
+     * Mostra a página inicial: a visão inicio/index dentro do layout.
+     */
     public function index(): void
     {
-        echo '<h1>Gestão Fotovoltaica</h1>';
-        echo '<p>O sistema está funcionando.</p>';
+        $this->renderizar('inicio/index', [
+            'titulo' => 'Início',
+        ]);
     }
 }
