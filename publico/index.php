@@ -37,7 +37,8 @@ spl_autoload_register(function (string $classe): void {
 // 2. Rotas: as páginas que existem e as ações permitidas em cada uma
 // Só o que está nesta lista pode ser acessado pela URL.
 $rotas = [
-    'inicio' => ['InicioControlador', ['index']],
+    'inicio'  => ['InicioControlador', ['index']],
+    'cidades' => ['CidadeControlador', ['index']],
 ];
 
 // 3. Execução da página pedida
